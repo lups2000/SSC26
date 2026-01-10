@@ -4,28 +4,15 @@ struct XylophoneView: View {
     var body: some View {
         ZStack {
             BackgroundGradient()
-            VStack(spacing: 20) {
-                Text("Xylophone")
-                    .font(.largeTitle)
-                    .bold()
-                Text("This is where your interactive xylophone will appear!")
-                    .foregroundStyle(.secondary)
-                    .padding()
-                Rectangle()
-                    .fill(.blue)
-                    .frame(height: 40)
-                    .cornerRadius(8)
-                    .padding(.horizontal, 40)
-                Rectangle()
-                    .fill(.green)
-                    .frame(height: 40)
-                    .cornerRadius(8)
-                    .padding(.horizontal, 50)
-                Rectangle()
-                    .fill(.orange)
-                    .frame(height: 40)
-                    .cornerRadius(8)
-                    .padding(.horizontal, 60)
+            HStack(spacing: 10) {
+                XylophoneTile(note: "C", color: .red, height: 580)
+                XylophoneTile(note: "D", color: .orange, height: 540)
+                XylophoneTile(note: "E", color: .yellow, height: 500)
+                XylophoneTile(note: "F", color: .green, height: 460)
+                XylophoneTile(note: "G", color: .teal, height: 420)
+                XylophoneTile(note: "A", color: .blue, height: 380)
+                XylophoneTile(note: "B", color: .indigo, height: 340)
+                XylophoneTile(note: "C", color: .purple, height: 300)
             }
         }
         .navigationTitle("Free Play")
