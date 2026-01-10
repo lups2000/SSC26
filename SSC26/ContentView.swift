@@ -18,13 +18,12 @@ struct ContentView: View {
         } else {
             NavigationSplitView {
                 List {
-                    NavigationLink("About", destination: AboutView())
                     NavigationLink("Tutorial", destination: TutorialView())
                     NavigationLink("Free Play", destination: XylophoneView())
                 }
                 .navigationTitle("XyloFingers")
             } detail: {
-                Text("Select a section")
+                TutorialView()
             }
         }
     }

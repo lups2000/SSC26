@@ -12,12 +12,7 @@ struct WelcomeView: View {
     var body: some View {
         ZStack {
             // Background gradient
-            LinearGradient(
-                colors: [Color(red: 0.85, green: 0.93, blue: 1.0), Color(red: 0.96, green: 0.96, blue: 1.0)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            BackgroundGradient()
             
             VStack(spacing: 32) {
                 Spacer()
