@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var hasStarted = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if !hasStarted {
+            WelcomeView(startAction: {
+                hasStarted = true
+            })
+        } else {
+            NavigationSplitView {
+                List {
+                    NavigationLink("About", destination: AboutView())
+                    NavigationLink("Tutorial", destination: TutorialView())
+                    NavigationLink("Free Play", destination: XylophoneView())
+                }
+                .navigationTitle("Xylophone App")
+            } detail: {
+                Text("Select a section")
+            }
         }
-        .padding()
     }
 }
 
