@@ -12,6 +12,8 @@ struct XylophoneView: View {
         SheetNote(pitch: 1, color: .indigo),
         SheetNote(pitch: 0, color: .purple)
     ]
+    
+    let tileHeights: [CGFloat] = [580, 540, 500, 460, 420, 380, 340, 300]
 
     var body: some View {
         ZStack {
@@ -19,22 +21,42 @@ struct XylophoneView: View {
 
             VStack(spacing: 40) {
 
-                // Music sheet at the top
+                // Music sheet
                 MusicSheetView(notes: sheetNotes)
                     .padding(.top, 20)
 
                 Spacer()
 
-                // Xylophone tiles at the bottom
-                HStack(spacing: 10) {
-                    XylophoneTile(note: "C", color: .red, height: 580)
-                    XylophoneTile(note: "D", color: .orange, height: 540)
-                    XylophoneTile(note: "E", color: .yellow, height: 500)
-                    XylophoneTile(note: "F", color: .green, height: 460)
-                    XylophoneTile(note: "G", color: .teal, height: 420)
-                    XylophoneTile(note: "A", color: .blue, height: 380)
-                    XylophoneTile(note: "B", color: .indigo, height: 340)
-                    XylophoneTile(note: "C", color: .purple, height: 300)
+                // Xylophone with wood sticks
+                ZStack {
+                    // Top wood stick
+                    Rectangle()
+                        .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
+                        .cornerRadius(12)
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                        .offset(y: -tileHeights.first! / 2 + 100)
+                        .rotationEffect(.degrees(7))
+                    
+                    // Bottom wood stick
+                    Rectangle()
+                        .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                        .offset(y: tileHeights.last! / 2 + 40)
+                        .rotationEffect(.degrees(-7))
+                    
+                    // Tiles
+                    HStack(spacing: 10) {
+                        XylophoneTile(note: "C", color: .red, height: tileHeights[0])
+                        XylophoneTile(note: "D", color: .orange, height: tileHeights[1])
+                        XylophoneTile(note: "E", color: .yellow, height: tileHeights[2])
+                        XylophoneTile(note: "F", color: .green, height: tileHeights[3])
+                        XylophoneTile(note: "G", color: .teal, height: tileHeights[4])
+                        XylophoneTile(note: "A", color: .blue, height: tileHeights[5])
+                        XylophoneTile(note: "B", color: .indigo, height: tileHeights[6])
+                        XylophoneTile(note: "C", color: .purple, height: tileHeights[7])
+                    }
                 }
                 .padding(.bottom, 30)
             }

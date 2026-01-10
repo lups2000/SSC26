@@ -5,10 +5,24 @@ struct XylophoneTile: View {
     var color: Color
     var height: CGFloat
     var action: (() -> Void)? = nil
-    
+
+    @State private var isPressed = false
+
     var body: some View {
         Button(action: {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isPressed = true
+            }
+
+            // Trigger the action (play sound)
             action?()
+
+            // Reset after short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isPressed = false
+                }
+            }
         }) {
             Rectangle()
                 .fill(color)
@@ -17,8 +31,8 @@ struct XylophoneTile: View {
                 .overlay(
                     VStack {
                         Circle()
-                            .fill(Color.black)
-                            .frame(width: 20, height: 20)
+                            .fill(Color.white)
+                            .frame(width: 30, height: 30)
                             .padding(.top, 20)
                         Spacer()
                         Text(note)
@@ -28,13 +42,15 @@ struct XylophoneTile: View {
                             .shadow(radius: 2)
                         Spacer()
                         Circle()
-                            .fill(Color.black)
-                            .frame(width: 20, height: 20)
+                            .fill(Color.white)
+                            .frame(width: 30, height: 30)
                             .padding(.bottom, 20)
                     }
                 )
                 .padding(.horizontal, 16)
-                .shadow(color: color.opacity(0.3), radius: 6, x: 0, y: 4)
+                .shadow(color: color.opacity(isPressed ? 0.6 : 0.3), radius: isPressed ? 10 : 6, x: 0, y: 4)
+                .scaleEffect(isPressed ? 0.98 : 1.0)
+                .brightness(isPressed ? 0.05 : 0.0)
         }
         .buttonStyle(PlainButtonStyle())
     }
