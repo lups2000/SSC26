@@ -22,7 +22,7 @@ struct ContentView: View {
                     NavigationLink("Tutorial", destination: TutorialView())
                     NavigationLink("Free Play", destination: XylophoneView())
                 }
-                .navigationTitle("Xylophone App")
+                .navigationTitle("XyloFingers")
             } detail: {
                 Text("Select a section")
             }
