@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  SSC26
-//
-//  Created by matteo luppi on 10/01/26.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -19,6 +12,7 @@ struct ContentView: View {
             NavigationSplitView {
                 List {
                     NavigationLink("Tutorial", destination: TutorialView())
+                    NavigationLink("Guided Songs", destination: GuidedSongsView())
                     NavigationLink("Free Play", destination: XylophoneView())
                 }
                 .navigationTitle("XyloFingers")
