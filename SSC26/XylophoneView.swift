@@ -48,14 +48,30 @@ struct XylophoneView: View {
                     
                     // Tiles
                     HStack(spacing: 10) {
-                        XylophoneTile(note: "C", color: .red, height: tileHeights[0])
-                        XylophoneTile(note: "D", color: .orange, height: tileHeights[1])
-                        XylophoneTile(note: "E", color: .yellow, height: tileHeights[2])
-                        XylophoneTile(note: "F", color: .green, height: tileHeights[3])
-                        XylophoneTile(note: "G", color: .teal, height: tileHeights[4])
-                        XylophoneTile(note: "A", color: .blue, height: tileHeights[5])
-                        XylophoneTile(note: "B", color: .indigo, height: tileHeights[6])
-                        XylophoneTile(note: "C", color: .purple, height: tileHeights[7])
+                        XylophoneTile(note: "C", color: .red, height: tileHeights[0]) {
+                            SoundPlayer.shared.play(note: "C")
+                        }
+                        XylophoneTile(note: "D", color: .orange, height: tileHeights[1]) {
+                            SoundPlayer.shared.play(note: "D")
+                        }
+                        XylophoneTile(note: "E", color: .yellow, height: tileHeights[2]) {
+                            SoundPlayer.shared.play(note: "E")
+                        }
+                        XylophoneTile(note: "F", color: .green, height: tileHeights[3]) {
+                            SoundPlayer.shared.play(note: "F")
+                        }
+                        XylophoneTile(note: "G", color: .teal, height: tileHeights[4]) {
+                            SoundPlayer.shared.play(note: "G")
+                        }
+                        XylophoneTile(note: "A", color: .blue, height: tileHeights[5]) {
+                            SoundPlayer.shared.play(note: "A")
+                        }
+                        XylophoneTile(note: "B", color: .indigo, height: tileHeights[6]) {
+                            SoundPlayer.shared.play(note: "B")
+                        }
+                        XylophoneTile(note: "C", color: .purple, height: tileHeights[7]) {
+                            SoundPlayer.shared.play(note: "C_H")
+                        }
                     }
                 }
                 .padding(.bottom, 30)
