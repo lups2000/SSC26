@@ -36,7 +36,7 @@ struct XylophoneTile: View {
                             .padding(.top, 20)
                         Spacer()
                         Text(note)
-                            .font(.title2)
+                            .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                             .shadow(radius: 2)
@@ -48,14 +48,21 @@ struct XylophoneTile: View {
                     }
                 )
                 .padding(.horizontal, 16)
-                .shadow(color: color.opacity(isPressed ? 0.6 : 0.3), radius: isPressed ? 10 : 6, x: 0, y: 4)
-                .scaleEffect(isPressed ? 0.98 : 1.0)
-                .brightness(isPressed ? 0.05 : 0.0)
+                .scaleEffect(isPressed ? 0.97 : 1)
+                .offset(y: isPressed ? 4 : 0)
+                .shadow(
+                    color: color.opacity(isPressed ? 0.15 : 0.35),
+                    radius: isPressed ? 4 : 8,
+                    x: 0,
+                    y: isPressed ? 2 : 6
+                )
         }
         .buttonStyle(PlainButtonStyle())
     }
 }
 
 #Preview {
-    XylophoneTile(note: "C", color: .red, height: 100)
+    XylophoneTile(note: "C", color: .red, height: 500) {
+        SoundPlayer.shared.play(note: "C")
+    }
 }
