@@ -8,54 +8,112 @@ struct SheetNote: Identifiable {
 
 struct MusicSheetView: View {
     let notes: [SheetNote]
+    let title: String?
 
     private let lineSpacing: CGFloat = 18
     private let noteSize: CGFloat = 25
 
     var body: some View {
         ZStack {
-            HStack(alignment: .center, spacing: 16) {
-                
-                // Treble clef
-                Text("𝄞")
-                    .font(.system(size: 100))
-                    .foregroundColor(.black.opacity(0.8))
-                    .offset(y: -10)
-                
-                ZStack {
-                    // Staff lines
-                    VStack(spacing: lineSpacing) {
-                        ForEach(0..<5) { _ in
-                            Rectangle()
-                                .fill(Color.black.opacity(0.6))
-                                .frame(height: 1)
-                        }
+            // Chalkboard with wood frame
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(red: 0.08, green: 0.08, blue: 0.09), Color(red: 0.06, green: 0.06, blue: 0.07)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    // Subtle chalk dust texture approximation
+                    ZStack {
+                        RadialGradient(
+                            colors: [Color.white.opacity(0.06), .clear],
+                            center: .topLeading,
+                            startRadius: 0,
+                            endRadius: 400
+                        )
+                        RadialGradient(
+                            colors: [Color.white.opacity(0.03), .clear],
+                            center: .bottomTrailing,
+                            startRadius: 0,
+                            endRadius: 500
+                        )
                     }
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                )
+                .padding(20)
+                .background(
+                    // Wood frame
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(red: 0.5, green: 0.32, blue: 0.14), Color(red: 0.38, green: 0.24, blue: 0.11)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .stroke(Color.black.opacity(0.3), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.25), radius: 14, x: 0, y: 10)
+                )
 
-                    // Notes
-                    HStack(spacing: 50) {
-                        ForEach(notes) { note in
-                            Circle()
-                                .fill(note.color)
-                                .frame(width: noteSize, height: noteSize)
+            // Content drawn in white chalk with optional title above
+            VStack(alignment: .leading, spacing: 12) {
+                if let title, !title.isEmpty {
+                    Text(title)
+                        .font(.custom("Marker Felt", size: 30).weight(.semibold))
+                        .foregroundStyle(Color.white)
+                        .kerning(0.5)
+                        .rotationEffect(.degrees(-1.2))
+                        .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
+                        .padding(.leading, 6)
+                }
+                HStack(alignment: .center, spacing: 16) {
+                    // Treble clef in chalk
+                    Text("𝄞")
+                        .font(.system(size: 100, weight: .regular))
+                        .foregroundStyle(Color.white)
+                        .shadow(color: .white.opacity(0.15), radius: 1.5, x: 0, y: 1)
+                        .offset(y: -10)
+
+                    ZStack {
+                        // Staff lines in chalk
+                        VStack(spacing: lineSpacing) {
+                            ForEach(0..<5) { _ in
+                                Capsule()
+                                    .fill(Color.white.opacity(0.9))
+                                    .frame(height: 2)
+                                    .shadow(color: .white.opacity(0.08), radius: 0.5, x: 0, y: 0.5)
+                            }
+                        }
+
+                        // Notes as colored circles with chalky white edges
+                        HStack(spacing: 50) {
+                            ForEach(notes) { note in
+                                ZStack {
+                                    Circle()
+                                        .fill(note.color)
+                                        .frame(width: noteSize, height: noteSize)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white.opacity(0.35), lineWidth: 1)
+                                        )
+                                        .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 1)
+                                }
                                 .offset(y: noteOffset(note.pitch))
+                            }
                         }
                     }
                 }
             }
+            .padding(.vertical, 50)
+            .padding(.horizontal, 35)
         }
         .frame(width: 650)
-        .padding(.vertical, 28)
-        .padding(.horizontal, 24)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white.opacity(0.9))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.black.opacity(0.2), lineWidth: 1.5)
-        )
-        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 6)
+        .padding(.vertical, 12)
     }
 
     private func noteOffset(_ pitch: CGFloat) -> CGFloat {
@@ -73,5 +131,5 @@ struct MusicSheetView: View {
         SheetNote(pitch: 1.0, color: .blue),     // A
         SheetNote(pitch: 0.1, color: .indigo),   // B
         SheetNote(pitch: -1.0, color: .purple)    // C
-    ])
+    ], title: "First Melody")
 }

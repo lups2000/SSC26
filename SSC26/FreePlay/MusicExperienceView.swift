@@ -1,17 +1,32 @@
 import SwiftUI
 
 struct MusicExperienceView: View {
-
-    let sheetNotes: [SheetNote] = [
-        SheetNote(pitch: 7, color: .red),
-        SheetNote(pitch: 6, color: .orange),
-        SheetNote(pitch: 5, color: .yellow),
-        SheetNote(pitch: 4, color: .green),
-        SheetNote(pitch: 3, color: .teal),
-        SheetNote(pitch: 2, color: .blue),
-        SheetNote(pitch: 1, color: .indigo),
-        SheetNote(pitch: 0, color: .purple)
+    
+    let songTitle: String
+    let songNotes: [String]
+    
+    // Mapping from note character to SheetNote (pitch relative to staff and color)
+    private let noteMap: [String: (pitch: CGFloat, color: Color)] = [
+        "C": (7, .red),
+        "D": (6, .orange),
+        "E": (5, .yellow),
+        "F": (4, .green),
+        "G": (3, .teal),
+        "A": (2, .blue),
+        "B": (1, .indigo),
+        "C_H": (0, .purple)
     ]
+
+    private var sheetNotes: [SheetNote] {
+        songNotes.compactMap { key in
+            let upper = key.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+            if let mapped = noteMap[upper] {
+                return SheetNote(pitch: mapped.pitch, color: mapped.color)
+            } else {
+                return nil
+            }
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -19,7 +34,7 @@ struct MusicExperienceView: View {
 
             VStack(spacing: 40) {
 
-                MusicSheetView(notes: sheetNotes)
+                MusicSheetView(notes: sheetNotes, title: songTitle)
                     .padding(.top, 20)
 
                 Spacer()
@@ -33,5 +48,5 @@ struct MusicExperienceView: View {
 }
 
 #Preview {
-    MusicExperienceView()
+    MusicExperienceView(songTitle: "Free Play", songNotes: ["C", "D", "A"])
 }

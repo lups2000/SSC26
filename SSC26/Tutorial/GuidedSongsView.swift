@@ -41,18 +41,7 @@ struct GuidedSongsView: View {
                 .ignoresSafeArea()
 
             if let song = selectedSong {
-                // Placeholder for song player detail
-                VStack(spacing: 16) {
-                    Text("Playing: \(song.title)")
-                        .font(.title2).bold()
-                    Button("Close") {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                            selectedSong = nil
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                MusicExperienceView(songTitle: song.title, songNotes: song.notes)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
