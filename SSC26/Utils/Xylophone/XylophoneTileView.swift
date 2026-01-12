@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct XylophoneTile: View {
+struct XylophoneTileView: View {
     var note: String
     var color: Color
     var height: CGFloat
@@ -62,7 +62,7 @@ struct XylophoneTile: View {
 }
 
 #Preview {
-    XylophoneTile(note: "C", color: .red, height: 500) {
+    XylophoneTileView(note: "C", color: .red, height: 500) {
         SoundPlayer.shared.play(note: "C")
     }
 }
