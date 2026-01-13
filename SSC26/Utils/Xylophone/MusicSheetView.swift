@@ -10,7 +10,7 @@ struct MusicSheetView: View {
     let notes: [SheetNote]
     let title: String?
 
-    private let lineSpacing: CGFloat = 18
+    private let lineSpacing: CGFloat = 25
     private let noteSize: CGFloat = 25
 
     var body: some View {
@@ -64,12 +64,13 @@ struct MusicSheetView: View {
             VStack(alignment: .leading, spacing: 12) {
                 if let title, !title.isEmpty {
                     Text(title)
-                        .font(.custom("Marker Felt", size: 30).weight(.semibold))
+                        .font(.custom("Marker Felt", size: 30).weight(.thin))
                         .foregroundStyle(Color.white)
                         .kerning(0.5)
-                        .rotationEffect(.degrees(-1.2))
+                        .rotationEffect(.degrees(-2))
                         .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
                         .padding(.leading, 6)
+                        .padding(.top, -40)
                 }
                 HStack(alignment: .center, spacing: 16) {
                     // Treble clef in chalk
@@ -109,11 +110,9 @@ struct MusicSheetView: View {
                     }
                 }
             }
-            .padding(.vertical, 50)
             .padding(.horizontal, 35)
         }
-        .frame(width: 650)
-        .padding(.vertical, 12)
+        .frame(width: 650, height: 300)
     }
 
     private func noteOffset(_ pitch: CGFloat) -> CGFloat {

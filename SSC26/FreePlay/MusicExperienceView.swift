@@ -35,7 +35,7 @@ struct MusicExperienceView: View {
             VStack(spacing: 40) {
 
                 MusicSheetView(notes: sheetNotes, title: songTitle)
-                    .padding(.top, 20)
+                    .padding(.top, 40)
 
                 Spacer()
                 
