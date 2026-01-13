@@ -32,10 +32,10 @@ struct MusicExperienceView: View {
         ZStack {
             BackgroundGradient()
 
-            VStack(spacing: 40) {
+            VStack(spacing: 10) {
 
                 MusicSheetView(notes: sheetNotes, title: songTitle)
-                    .padding(.top, 40)
+                    //.padding(.top, 40)
 
                 Spacer()
                 
