@@ -35,11 +35,12 @@ struct MusicExperienceView: View {
             VStack(spacing: 10) {
 
                 MusicSheetView(notes: sheetNotes, title: songTitle)
-                    //.padding(.top, 40)
 
                 Spacer()
                 
-                XylophoneView()
+                XylophoneView(onPlayNote: { _ in 
+                    print("ciao")
+                })
             }
             .padding(.horizontal)
         }

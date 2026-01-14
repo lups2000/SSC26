@@ -13,7 +13,7 @@ struct ContentView: View {
                 List {
                     NavigationLink("Tutorial", destination: TutorialView())
                     NavigationLink("Guided Songs", destination: GuidedSongsView())
-                    NavigationLink("Free Play", destination: XylophoneView())
+                    NavigationLink("Free Play", destination: XylophoneView(onPlayNote: { _ in print("ciao")}))
                 }
                 .navigationTitle("XyloFingers")
             } detail: {

@@ -41,7 +41,7 @@ struct GuidedSongsView: View {
                 .ignoresSafeArea()
 
             if let song = selectedSong {
-                MusicExperienceView(songTitle: song.title, songNotes: song.notes)
+                GuidedSongPlayerView(song: song)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
