@@ -92,7 +92,7 @@ struct MusicSheetView: View {
                         }
 
                         // Notes as colored circles with chalky white edges
-                        HStack(spacing: 50) {
+                        HStack(spacing: 80) {
                             ForEach(notes) { note in
                                 ZStack {
                                     Circle()

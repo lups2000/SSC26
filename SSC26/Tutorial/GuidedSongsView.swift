@@ -4,7 +4,6 @@ struct GuidedSong: Identifiable {
     let id = UUID()
     let title: String
     let notes: [String]
-    let colors: [Color]
     let difficulty: Int // 1–3 stars
 }
 
@@ -14,19 +13,16 @@ struct GuidedSongsView: View {
         GuidedSong(
             title: "First Melody",
             notes: ["C", "E", "G"],
-            colors: [.red, .yellow, .teal],
             difficulty: 1
         ),
         GuidedSong(
             title: "Rising Tune",
             notes: ["C", "D", "E", "F", "G"],
-            colors: [.red, .orange, .yellow, .green, .teal],
             difficulty: 2
         ),
         GuidedSong(
             title: "Full Scale",
-            notes: ["C", "D", "E", "F", "G", "A", "B", "C"],
-            colors: [.red, .orange, .yellow, .green, .teal, .blue, .indigo, .purple],
+            notes: ["C", "D", "E", "F", "G", "A", "B", "C_H"],
             difficulty: 3
         )
     ]

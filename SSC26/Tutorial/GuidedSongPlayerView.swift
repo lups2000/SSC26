@@ -4,9 +4,9 @@ import Combine
 struct GuidedSongPlayerView: View {
     @State private var engine: GuidedSongEngine
 
-    init(song: GuidedSong, windowSize: Int = 5) {
+    init(song: GuidedSong) {
         _engine = State(
-            wrappedValue: GuidedSongEngine(song: song, windowSize: windowSize)
+            wrappedValue: GuidedSongEngine(song: song)
         )
     }
 
@@ -33,56 +33,59 @@ struct GuidedSongPlayerView: View {
     }
     
     private func sheetNotes() -> [SheetNote] {
-        engine.visibleWindow.enumerated().map { _, item in
-            let note = item.note
-            let idx = item.index
+        let windowSize = 6
+        let chunkStart = (engine.currentIndex / windowSize) * windowSize
+        let chunkEnd = min(chunkStart + windowSize, engine.song.notes.count)
+
+        var notes: [SheetNote] = []
+
+        for idx in chunkStart..<chunkEnd {
+            let note = engine.song.notes[idx]
             let isTarget = (idx == engine.currentIndex)
-            let isPast = (idx ?? Int.max) < engine.currentIndex
-            let baseColor: Color = {
-                if let idx = idx, !engine.song.colors.isEmpty {
-                    return engine.song.colors[idx % engine.song.colors.count]
-                } else {
-                    return .blue
-                }
-            }()
-            return SheetNote(
+            let baseColor = getColorNote(for: note)
+            let sheetNote = SheetNote(
                 pitch: pitch(for: note),
-                color: adjustedColor(base: baseColor, isTarget: isTarget, isPast: isPast)
+                color: adjustedColor(base: baseColor, isTarget: isTarget)
             )
+            notes.append(sheetNote)
         }
+
+        return notes
     }
     
-    private func adjustedColor(base: Color, isTarget: Bool, isPast: Bool) -> Color {
+    private func adjustedColor(base: Color, isTarget: Bool) -> Color {
         if isTarget {
-            return engine.lastInputWasCorrect == false ? .red : base
+            return base
         }
-        if isPast {
-            return base.opacity(0.5)
-        }
-        return base
+        return base.opacity(0.3)
     }
     
     private func pitch(for note: String) -> CGFloat {
         switch note {
-        case "C": return 6
-        case "D": return 5
-        case "E": return 4
-        case "F": return 3
-        case "G": return 2
-        case "A": return 1
-        case "B": return 0
-        default: return 0
+            case "C": return 6
+            case "D": return 5
+            case "E": return 4
+            case "F": return 3
+            case "G": return 2
+            case "A": return 1
+            case "B": return 0
+            case "C_H": return -1
+            default: return 0
         }
     }
-
-    private var notesStrip: some View {
-        MusicSheetView(
-            notes: sheetNotes(),
-            title: engine.song.title
-        )
-        .frame(height: 260)
-        .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                   value: engine.currentIndex)
+    
+    private func getColorNote(for note: String) -> Color {
+        switch note {
+            case "C": return .red
+            case "D": return .orange
+            case "E": return .yellow
+            case "F": return .green
+            case "G": return .teal
+            case "A": return .blue
+            case "B": return .indigo
+            case "C_H": return .purple
+            default: return .red
+        }
     }
 
     private var progress: some View {
@@ -109,6 +112,6 @@ struct GuidedSongPlayerView: View {
 
 #Preview {
     NavigationStack {
-        GuidedSongPlayerView(song: GuidedSong(title: "First Melody", notes: ["C","E","G","A","G","E","C"], colors: [.red,.yellow,.teal], difficulty: 1))
+        GuidedSongPlayerView(song: GuidedSong(title: "First Melody", notes: ["C","E","G","A","G","C_H","C", "C","E","G","A","G","E","C"], difficulty: 1))
     }
 }
