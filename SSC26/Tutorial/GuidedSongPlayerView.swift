@@ -89,24 +89,76 @@ struct GuidedSongPlayerView: View {
     }
 
     private var progress: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "chart.bar.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
                 Text("Progress")
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text("\(engine.currentIndex)/\(engine.song.notes.count)")
-                    .font(.footnote)
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule().fill(.thinMaterial)
+                    )
             }
-            ProgressView(value: Double(engine.currentIndex), total: Double(engine.song.notes.count))
-                .progressViewStyle(.linear)
+
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        LinearGradient(colors: [
+                            Color.white.opacity(0.15),
+                            Color.white.opacity(0.05)
+                        ], startPoint: .top, endPoint: .bottom)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .frame(height: 10)
+
+                // Progress fill
+                GeometryReader { proxy in
+                    let total = max(1, engine.song.notes.count)
+                    let progress = CGFloat(engine.currentIndex) / CGFloat(total)
+                    let width = proxy.size.width * progress
+
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(
+                            LinearGradient(colors: [
+                                Color.blue.opacity(0.9),
+                                Color.purple.opacity(0.9)
+                            ], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .frame(width: width, height: 10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.white.opacity(0.25))
+                                .blur(radius: 1)
+                                .mask(
+                                    LinearGradient(colors: [Color.white.opacity(0.6), .clear], startPoint: .top, endPoint: .bottom)
+                                )
+                        )
+                        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: engine.currentIndex)
+                }
+                .frame(height: 10)
+            }
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.thinMaterial)
+                .fill(.ultraThinMaterial)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 }
 
