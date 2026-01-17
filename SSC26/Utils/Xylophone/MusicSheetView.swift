@@ -4,6 +4,7 @@ struct SheetNote: Identifiable {
     let id = UUID()
     let pitch: CGFloat
     let color: Color
+    let isTarget: Bool
 }
 
 struct MusicSheetView: View {
@@ -97,12 +98,22 @@ struct MusicSheetView: View {
                                 ZStack {
                                     Circle()
                                         .fill(note.color)
+                                        .opacity(note.isTarget ? 1 : 0.3)
                                         .frame(width: noteSize, height: noteSize)
                                         .overlay(
                                             Circle()
                                                 .stroke(Color.white.opacity(0.35), lineWidth: 1)
                                         )
                                         .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 1)
+                                    
+                                    // Target indicator
+                                    if note.isTarget {
+                                        Rectangle()
+                                            .fill(note.color)
+                                            .opacity(0.3)
+                                            .cornerRadius(15)
+                                            .frame(width: 50, height: 80)
+                                    }
                                 }
                                 .offset(y: noteOffset(note.pitch))
                             }
@@ -122,13 +133,13 @@ struct MusicSheetView: View {
 
 #Preview {
     MusicSheetView(notes: [
-        SheetNote(pitch: 6.5, color: .red),      // C
-        SheetNote(pitch: 5.4, color: .orange),   // D
-        SheetNote(pitch: 4.3, color: .yellow),   // E
-        SheetNote(pitch: 3.2, color: .green),    // F
-        SheetNote(pitch: 2.1, color: .teal),     // G
-        SheetNote(pitch: 1.0, color: .blue),     // A
-        SheetNote(pitch: 0.1, color: .indigo),   // B
-        SheetNote(pitch: -1.0, color: .purple)    // C
+        SheetNote(pitch: 6.5, color: .red, isTarget: true),   // C
+        SheetNote(pitch: 5.4, color: .orange, isTarget: false),   // D
+        SheetNote(pitch: 4.3, color: .yellow, isTarget: false),   // E
+        SheetNote(pitch: 3.2, color: .green, isTarget: false),    // F
+        SheetNote(pitch: 2.1, color: .teal, isTarget: false),     // G
+        SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
+        SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
+        SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
     ], title: "First Melody")
 }

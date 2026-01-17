@@ -45,19 +45,13 @@ struct GuidedSongPlayerView: View {
             let baseColor = getColorNote(for: note)
             let sheetNote = SheetNote(
                 pitch: pitch(for: note),
-                color: adjustedColor(base: baseColor, isTarget: isTarget)
+                color: baseColor,
+                isTarget: isTarget
             )
             notes.append(sheetNote)
         }
 
         return notes
-    }
-    
-    private func adjustedColor(base: Color, isTarget: Bool) -> Color {
-        if isTarget {
-            return base
-        }
-        return base.opacity(0.3)
     }
     
     private func pitch(for note: String) -> CGFloat {

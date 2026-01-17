@@ -21,7 +21,7 @@ struct MusicExperienceView: View {
         songNotes.compactMap { key in
             let upper = key.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
             if let mapped = noteMap[upper] {
-                return SheetNote(pitch: mapped.pitch, color: mapped.color)
+                return SheetNote(pitch: mapped.pitch, color: mapped.color, isTarget: false)
             } else {
                 return nil
             }
