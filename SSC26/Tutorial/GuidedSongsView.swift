@@ -4,7 +4,7 @@ struct GuidedSong: Identifiable {
     let id = UUID()
     let title: String
     let notes: [String]
-    let difficulty: Int // 1–3 stars
+    let difficulty: Int
 }
 
 struct GuidedSongsView: View {
@@ -34,42 +34,32 @@ struct GuidedSongsView: View {
     var body: some View {
         ZStack {
             BackgroundGradient()
-                .ignoresSafeArea()
 
             if let song = selectedSong {
                 GuidedSongPlayerView(song: song)
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Simple header
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Guided Songs")
-                                .font(.largeTitle).bold()
-                            Text("Pick a melody to start")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.horizontal, 4)
+                VStack(alignment: .leading, spacing: 16) {
+                    // Simple header
+                    Text("Pick a melody to start")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
 
-                        let gridColumns = [
-                            GridItem(.flexible(), spacing: 18),
-                            GridItem(.flexible(), spacing: 18)
-                        ]
-                        LazyVGrid(columns: gridColumns, alignment: .center, spacing: 18) {
-                            ForEach(guidedSongs) { song in
-                                SongCardView(song: song) {
-                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                        selectedSong = song
-                                    }
+                    let gridColumns = [
+                        GridItem(.flexible(), spacing: 18),
+                        GridItem(.flexible(), spacing: 18)
+                    ]
+                    LazyVGrid(columns: gridColumns, alignment: .center, spacing: 18) {
+                        ForEach(guidedSongs) { song in
+                            SongCardView(song: song) {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    selectedSong = song
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top)
-                    .padding(.bottom, 24)
+                    Spacer()
                 }
-                .transition(.opacity)
+                .padding(.horizontal, 24)
             }
         }
         .navigationTitle("Guided Songs")
