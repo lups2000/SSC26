@@ -7,12 +7,32 @@ struct SheetNote: Identifiable {
     let isTarget: Bool
 }
 
+struct ShakeEffect: GeometryEffect {
+    var amount: CGFloat = 6
+    var shakesPerUnit: CGFloat = 3
+    var animatableData: CGFloat
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(
+            CGAffineTransform(
+                translationX: amount * sin(animatableData * .pi * shakesPerUnit),
+                y: -0.8 * sin(animatableData * .pi * shakesPerUnit)
+            )
+        )
+    }
+}
+
+
 struct MusicSheetView: View {
     let notes: [SheetNote]
     let title: String?
+    let isCorrect: Bool
 
     private let lineSpacing: CGFloat = 25
     private let noteSize: CGFloat = 25
+    
+    @State private var animateTarget = false
+    @State private var shakeTrigger: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -110,10 +130,30 @@ struct MusicSheetView: View {
                                     if note.isTarget {
                                         Rectangle()
                                             .fill(note.color)
-                                            .opacity(0.3)
+                                            .opacity(0.5)
                                             .cornerRadius(15)
                                             .frame(width: 50, height: 80)
+                                            .modifier(
+                                                ShakeEffect(animatableData: shakeTrigger)
+                                            )
+                                            .onAppear {
+                                                if !isCorrect {
+                                                    withAnimation(.linear(duration: 0.4).repeatCount(1, autoreverses: false)) {
+                                                        shakeTrigger += 1
+                                                    }
+                                                }
+                                            }
+                                            .onChange(of: isCorrect) { isC in
+                                                if !isC {
+                                                    withAnimation(.linear(duration: 0.4).repeatCount(1, autoreverses: false)) {
+                                                        shakeTrigger += 1
+                                                    }
+                                                }
+                                            }
                                     }
+
+                                    
+
                                 }
                                 .offset(y: noteOffset(note.pitch))
                             }
@@ -141,5 +181,5 @@ struct MusicSheetView: View {
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
         SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
         SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
-    ], title: "First Melody")
+    ], title: "First Melody", isCorrect: false)
 }

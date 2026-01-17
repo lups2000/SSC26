@@ -14,7 +14,8 @@ struct GuidedSongPlayerView: View {
         VStack(spacing: 16) {
             MusicSheetView(
                 notes: sheetNotes(),
-                title: engine.song.title
+                title: engine.song.title,
+                isCorrect: engine.lastInputWasCorrect ?? true
             )
             .animation(.spring(response: 0.35, dampingFraction: 0.8),
                        value: engine.currentIndex)
@@ -25,7 +26,6 @@ struct GuidedSongPlayerView: View {
         }
         .padding()
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: engine.currentIndex)
-        .animation(.easeInOut(duration: 0.2), value: engine.lastInputWasCorrect)
         .background(
             LinearGradient(colors: [.blue.opacity(0.06), .purple.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
