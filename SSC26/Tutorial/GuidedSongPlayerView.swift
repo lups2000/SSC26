@@ -3,6 +3,7 @@ import Combine
 
 struct GuidedSongPlayerView: View {
     @State private var engine: GuidedSongEngine
+    @Environment(\.dismiss) private var dismiss
 
     init(song: GuidedSong) {
         _engine = State(
@@ -12,14 +13,16 @@ struct GuidedSongPlayerView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            MusicSheetView(
-                notes: sheetNotes(),
-                title: engine.song.title,
-                isCorrect: engine.lastInputWasCorrect ?? true
-            )
-            .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                       value: engine.currentIndex)
-            progress
+            HStack(alignment: .center, spacing: 16) {
+                MusicSheetView(
+                    notes: sheetNotes(),
+                    title: engine.song.title,
+                    isCorrect: engine.lastInputWasCorrect ?? true,
+                    progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count))
+                )
+                .animation(.spring(response: 0.35, dampingFraction: 0.8),
+                           value: engine.currentIndex)
+            }
             XylophoneView(onPlayNote: { note in
                 engine.handleInput(note: note)
             })
@@ -30,6 +33,14 @@ struct GuidedSongPlayerView: View {
             LinearGradient(colors: [.blue.opacity(0.06), .purple.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
         )
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: { dismiss() }) {
+                    Label("Back", systemImage: "chevron.left")
+                }
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func sheetNotes() -> [SheetNote] {
@@ -81,79 +92,6 @@ struct GuidedSongPlayerView: View {
             default: return .red
         }
     }
-
-    private var progress: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "chart.bar.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text("Progress")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text("\(engine.currentIndex)/\(engine.song.notes.count)")
-                    .font(.footnote.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule().fill(.thinMaterial)
-                    )
-            }
-
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(
-                        LinearGradient(colors: [
-                            Color.white.opacity(0.15),
-                            Color.white.opacity(0.05)
-                        ], startPoint: .top, endPoint: .bottom)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
-                    .frame(height: 10)
-
-                // Progress fill
-                GeometryReader { proxy in
-                    let total = max(1, engine.song.notes.count)
-                    let progress = CGFloat(engine.currentIndex) / CGFloat(total)
-                    let width = proxy.size.width * progress
-
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(
-                            LinearGradient(colors: [
-                                Color.blue.opacity(0.9),
-                                Color.purple.opacity(0.9)
-                            ], startPoint: .leading, endPoint: .trailing)
-                        )
-                        .frame(width: width, height: 10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.white.opacity(0.25))
-                                .blur(radius: 1)
-                                .mask(
-                                    LinearGradient(colors: [Color.white.opacity(0.6), .clear], startPoint: .top, endPoint: .bottom)
-                                )
-                        )
-                        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: engine.currentIndex)
-                }
-                .frame(height: 10)
-            }
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.ultraThinMaterial)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.white.opacity(0.15), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
-    }
 }
 
 #Preview {
@@ -161,3 +99,4 @@ struct GuidedSongPlayerView: View {
         GuidedSongPlayerView(song: GuidedSong(title: "First Melody", notes: ["C","E","G","A","G","C_H","C", "C","E","G","A","G","E","C"], difficulty: 1))
     }
 }
+

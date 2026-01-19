@@ -9,14 +9,14 @@ struct SheetNote: Identifiable {
 
 struct ShakeEffect: GeometryEffect {
     var amount: CGFloat = 6
-    var shakesPerUnit: CGFloat = 3
+    var shakesPerUnit: CGFloat = 5
     var animatableData: CGFloat
 
     func effectValue(size: CGSize) -> ProjectionTransform {
         ProjectionTransform(
             CGAffineTransform(
                 translationX: amount * sin(animatableData * .pi * shakesPerUnit),
-                y: -0.8 * sin(animatableData * .pi * shakesPerUnit)
+                y: -0.5 * sin(animatableData * .pi * shakesPerUnit)
             )
         )
     }
@@ -27,6 +27,7 @@ struct MusicSheetView: View {
     let notes: [SheetNote]
     let title: String?
     let isCorrect: Bool
+    let progress: Double?
 
     private let lineSpacing: CGFloat = 25
     private let noteSize: CGFloat = 25
@@ -83,16 +84,36 @@ struct MusicSheetView: View {
 
             // Content drawn in white chalk with optional title above
             VStack(alignment: .leading, spacing: 12) {
-                if let title, !title.isEmpty {
-                    Text(title)
-                        .font(.custom("Marker Felt", size: 30).weight(.thin))
-                        .foregroundStyle(Color.white)
-                        .kerning(0.5)
-                        .rotationEffect(.degrees(-2))
-                        .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
-                        .padding(.leading, 6)
-                        .padding(.top, -40)
-                }
+                HStack {
+                    if let title, !title.isEmpty {
+                        Text(title)
+                            .font(.custom("Marker Felt", size: 30).weight(.thin))
+                            .foregroundStyle(Color.white)
+                            .kerning(0.5)
+                            .rotationEffect(.degrees(-2))
+                            .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
+                            .padding(.leading, 6)
+                    }
+                    
+                    Spacer()
+                    
+                    if let progress, progress >= 0, progress <= 1 {
+                        HStack(spacing: 8) {
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(Color.white.opacity(0.15))
+                                GeometryReader { geo in
+                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .fill(Color.white)
+                                        .frame(width: max(0, min(geo.size.width, geo.size.width * progress)))
+                                }
+                            }
+                            .frame(width: 140, height: 15)
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 10)
+                    }
+                }.padding(.top, -40)
                 HStack(alignment: .center, spacing: 16) {
                     // Treble clef in chalk
                     Text("𝄞")
@@ -181,5 +202,6 @@ struct MusicSheetView: View {
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
         SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
         SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
-    ], title: "First Melody", isCorrect: false)
+    ], title: "First Melody", isCorrect: false, progress: 0.42)
 }
+
