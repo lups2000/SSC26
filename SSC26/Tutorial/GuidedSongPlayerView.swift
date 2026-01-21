@@ -98,6 +98,7 @@ struct GuidedSongPlayerView: View {
     NavigationStack {
         GuidedSongPlayerView(song: GuidedSong(
             title: "Twinkle Twinkle Little Star",
+            description: "Time to shine! This lullaby helps you jump across the colors like a star.",
             notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
             difficulty: 2
         ))

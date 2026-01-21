@@ -19,7 +19,17 @@ struct SongCardView: View {
             .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
             .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Song: \(song.title). Difficulty: \(song.difficulty) out of 3.")
+            .accessibilityLabel(
+                {
+                    var parts: [String] = ["Song: \(song.title)."]
+                    let description = song.description
+                    if !description.isEmpty {
+                        parts.append("Description: \(description)")
+                    }
+                    parts.append("Difficulty: \(song.difficulty) out of 3.")
+                    return parts.joined(separator: " ")
+                }()
+            )
         }
         .buttonStyle(.plain)
     }
@@ -30,19 +40,23 @@ private extension SongCardView {
         HStack(alignment: .center, spacing: 12) {
             iconCircle
 
-            Text(song.title)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(song.title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
 
-            Spacer(minLength: 8)
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .opacity(0.8)
+                let description = song.description
+                if !description.isEmpty {
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+            }
         }
     }
 
@@ -67,26 +81,14 @@ private extension SongCardView {
     }
 
     var difficultyView: some View {
-        HStack(spacing: 6) {
-            HStack(spacing: 3) {
-                ForEach(0..<3) { index in
-                    Image(systemName: index < song.difficulty ? "star.fill" : "star")
-                        .foregroundStyle(index < song.difficulty ? .yellow : .secondary)
-                        .font(.system(size: 12, weight: .semibold))
-                        .accessibilityHidden(true)
-                }
+        HStack(spacing: 3) {
+            ForEach(0..<3) { index in
+                Image(systemName: "music.note")
+                    .foregroundStyle(index < song.difficulty ? Color.accentColor : .secondary)
+                    .opacity(index < song.difficulty ? 1.0 : 0.35)
+                    .font(.system(size: 20, weight: .bold))
+                    .accessibilityHidden(true)
             }
-
-            Text(difficultyLabel)
-                .font(.footnote)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(Color.secondary.opacity(0.12))
-                )
         }
     }
 
@@ -123,6 +125,7 @@ private extension SongCardView {
         BackgroundGradient()
         SongCardView(song: GuidedSong(
             title: "First Melody",
+            description: "A simple melody to get you started!",
             notes: ["C", "E", "G"],
             difficulty: 1
         ), onSelect: {
@@ -131,3 +134,4 @@ private extension SongCardView {
         .frame(width: 400, height: 300).padding()
     }
 }
+
