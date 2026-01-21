@@ -120,25 +120,14 @@ private extension SongCardView {
 
 #Preview {
     ZStack {
-        LinearGradient(colors: [.blue.opacity(0.08), .purple.opacity(0.08)], startPoint: .topLeading, endPoint: .bottomTrailing)
-            .ignoresSafeArea()
-        VStack(spacing: 16) {
-            SongCardView(song: GuidedSong(
-                title: "First Melody",
-                notes: ["C", "E", "G"],
-                difficulty: 1
-            ), onSelect: {
-                print("Selected: First Melody")
-            })
-
-            SongCardView(song: GuidedSong(
-                title: "Chords in the Rain",
-                notes: ["A", "C_H", "E"],
-                difficulty: 3
-            ), onSelect: {
-                print("Selected: Chords in the Rain")
-            })
-        }
-        .padding()
+        BackgroundGradient()
+        SongCardView(song: GuidedSong(
+            title: "First Melody",
+            notes: ["C", "E", "G"],
+            difficulty: 1
+        ), onSelect: {
+            print("Selected: First Melody")
+        })
+        .frame(width: 400, height: 300).padding()
     }
 }

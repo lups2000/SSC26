@@ -96,7 +96,11 @@ struct GuidedSongPlayerView: View {
 
 #Preview {
     NavigationStack {
-        GuidedSongPlayerView(song: GuidedSong(title: "First Melody", notes: ["C","E","G","A","G","C_H","C", "C","E","G","A","G","E","C"], difficulty: 1))
+        GuidedSongPlayerView(song: GuidedSong(
+            title: "Twinkle Twinkle Little Star",
+            notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
+            difficulty: 2
+        ))
     }
 }
 
