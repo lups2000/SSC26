@@ -28,11 +28,19 @@ struct MusicSheetView: View {
     let isCorrect: Bool
     let progress: Double?
 
+    let onRestart: (() -> Void)
+    let onClose: (() -> Void)
+
     private let lineSpacing: CGFloat = 25
     private let noteSize: CGFloat = 25
 
     @State private var animateTarget = false
     @State private var shakeTrigger: CGFloat = 0
+    
+    private var isSongCompleted: Bool {
+        if let progress { return progress >= 1 }
+        return false
+    }
 
     var body: some View {
         ZStack {
@@ -71,26 +79,66 @@ struct MusicSheetView: View {
                 }
                 .padding(.top, -40)
 
-                HStack(alignment: .center, spacing: 16) {
-                    Text("𝄞")
-                        .font(.system(size: 100, weight: .regular))
-                        .foregroundStyle(Color.white)
-                        .shadow(color: .white.opacity(0.15), radius: 1.5, x: 0, y: 1)
-                        .offset(y: -10)
+                if isSongCompleted {
+                    VStack(spacing: 16) {
+                        Text("Congratulations!")
+                            .font(.custom("Marker Felt", size: 36).weight(.thin))
+                            .foregroundStyle(Color.white)
+                            .shadow(color: .white.opacity(0.15), radius: 1.5, x: 0, y: 1)
 
-                    ZStack {
-                        StaffLinesView(lineSpacing: lineSpacing)
+                        if let title, !title.isEmpty {
+                            Text("You successfully completed this song")
+                                .font(.custom("Marker Felt", size: 25).weight(.thin))
+                                .foregroundStyle(Color.white.opacity(0.9))
+                        }
 
-                        HStack(spacing: 80) {
-                            ForEach(notes) { note in
-                                ZStack {
-                                    NoteView(note: note, noteSize: noteSize)
+                        HStack(spacing: 16) {
+                            Button {
+                                onRestart()
+                            } label: {
+                                Text("Restart")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white))
+                                    .foregroundStyle(Color.black)
+                            }
 
-                                    if note.isTarget {
-                                        TargetIndicatorView(color: note.color, shakeTrigger: $shakeTrigger, isCorrect: isCorrect)
+                            Button {
+                                onClose()
+                            } label: {
+                                Text("Close")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.white, lineWidth: 2))
+                                    .foregroundStyle(Color.white)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    HStack(alignment: .center, spacing: 16) {
+                        Text("𝄞")
+                            .font(.system(size: 100, weight: .regular))
+                            .foregroundStyle(Color.white)
+                            .shadow(color: .white.opacity(0.15), radius: 1.5, x: 0, y: 1)
+                            .offset(y: -10)
+
+                        ZStack {
+                            StaffLinesView(lineSpacing: lineSpacing)
+
+                            HStack(spacing: 80) {
+                                ForEach(notes) { note in
+                                    ZStack {
+                                        NoteView(note: note, noteSize: noteSize)
+
+                                        if note.isTarget {
+                                            TargetIndicatorView(color: note.color, shakeTrigger: $shakeTrigger, isCorrect: isCorrect)
+                                        }
                                     }
+                                    .offset(y: noteOffset(note.pitch))
                                 }
-                                .offset(y: noteOffset(note.pitch))
                             }
                         }
                     }
@@ -116,5 +164,9 @@ struct MusicSheetView: View {
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
         SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
         SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
-    ], title: "First Melody", isCorrect: false, progress: 0.42)
+    ], title: "First Melody", isCorrect: false, progress: 1.42, onRestart: {
+        print("Restart")
+    }, onClose: {
+        print("Close")
+    })
 }

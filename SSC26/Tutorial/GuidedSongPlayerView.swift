@@ -17,7 +17,11 @@ struct GuidedSongPlayerView: View {
                     notes: sheetNotes(),
                     title: engine.song.title,
                     isCorrect: engine.lastInputWasCorrect ?? true,
-                    progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count))
+                    progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count)),
+                    onRestart: {
+                        engine.reset()
+                    },
+                    onClose: onBack
                 )
                 .animation(.spring(response: 0.35, dampingFraction: 0.8),
                            value: engine.currentIndex)
