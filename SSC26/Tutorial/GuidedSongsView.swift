@@ -66,7 +66,11 @@ struct GuidedSongsView: View {
             BackgroundGradient()
 
             if let song = selectedSong {
-                GuidedSongPlayerView(song: song)
+                GuidedSongPlayerView(song: song) {
+                    withAnimation {
+                        selectedSong = nil
+                    }
+                }
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {

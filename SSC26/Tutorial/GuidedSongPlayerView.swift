@@ -3,12 +3,11 @@ import Combine
 
 struct GuidedSongPlayerView: View {
     @State private var engine: GuidedSongEngine
-    @Environment(\.dismiss) private var dismiss
+    let onBack: () -> Void
 
-    init(song: GuidedSong) {
-        _engine = State(
-            wrappedValue: GuidedSongEngine(song: song)
-        )
+    init(song: GuidedSong, onBack: @escaping () -> Void) {
+        _engine = State(wrappedValue: GuidedSongEngine(song: song))
+        self.onBack = onBack
     }
 
     var body: some View {
@@ -35,7 +34,7 @@ struct GuidedSongPlayerView: View {
         )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button(action: { dismiss() }) {
+                Button(action: onBack) {
                     Label("Back", systemImage: "chevron.left")
                 }
             }
@@ -101,7 +100,9 @@ struct GuidedSongPlayerView: View {
             description: "Time to shine! This lullaby helps you jump across the colors like a star.",
             notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
             difficulty: 2
-        ))
+        ), onBack: {
+            print("Back tapped")
+        })
     }
 }
 
