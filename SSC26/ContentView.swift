@@ -11,14 +11,29 @@ struct ContentView: View {
         } else {
             NavigationSplitView {
                 List {
-                    NavigationLink("Tutorial", destination: TutorialView())
-                    NavigationLink("Guided Songs", destination: GuidedSongsView())
-                    NavigationLink("Free Play", destination: XylophoneView(onPlayNote: { _ in print("ciao")}))
+                    NavigationLink {
+                        TutorialView()
+                    } label: {
+                        Label("Guide", systemImage: "book.fill")
+                    }
+
+                    NavigationLink {
+                        GuidedSongsView()
+                    } label: {
+                        Label("Practice", systemImage: "music.note.list")
+                    }
+
+                    NavigationLink {
+                        XylophoneView(onPlayNote: { _ in print("ciao") })
+                    } label: {
+                        Label("Play XyloFingers", systemImage: "hand.point.up.fill")
+                    }
                 }
                 .navigationTitle("XyloFingers")
             } detail: {
                 TutorialView()
             }
+
         }
     }
 }
