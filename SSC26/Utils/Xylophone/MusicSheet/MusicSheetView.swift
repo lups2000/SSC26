@@ -53,11 +53,12 @@ struct MusicSheetView: View {
     }
     
     private let backgroundIcons: [BackgroundMusicIcon] = [
-        .init(symbol: "music.note", xOffset: -200, yOffset: -50, size: 40, rotation: -15, opacity: 0.6),
-        .init(symbol: "music.note", xOffset: 180, yOffset: 60, size: 40, rotation: 10, opacity: 0.6),
+        .init(symbol: "music.note", xOffset: -200, yOffset: -40, size: 40, rotation: -15, opacity: 0.6),
+        .init(symbol: "music.note", xOffset: 200, yOffset: -40, size: 40, rotation: -15, opacity: 0.6),
         .init(symbol: "music.note", xOffset: -250, yOffset: 40, size: 40, rotation: -5, opacity: 0.6),
-        .init(symbol: "music.note", xOffset: 230, yOffset: -80, size: 40, rotation: 10, opacity: 0.6),
-        .init(symbol: "music.note", xOffset: -160, yOffset: 60, size: 40, rotation: -25, opacity: 0.6),
+        .init(symbol: "music.note", xOffset: 250, yOffset: 40, size: 40, rotation: -10, opacity: 0.6),
+        .init(symbol: "music.note", xOffset: -160, yOffset: 60, size: 40, rotation: -15, opacity: 0.6),
+        .init(symbol: "music.note", xOffset: 160, yOffset: 60, size: 40, rotation: -10, opacity: 0.6),
         // Add more icons here as needed
     ]
 
@@ -115,15 +116,7 @@ struct MusicSheetView: View {
                                 .foregroundStyle(Color.white)
                                 .shadow(color: .white.opacity(0.15), radius: 1.5, x: 0, y: 1)
                                 .kerning(0.5)
-                                .rotationEffect(.degrees(-0.8))
-
-                            if let title, !title.isEmpty {
-                                Text("You successfully completed this song")
-                                    .font(.custom("Marker Felt", size: 25).weight(.thin))
-                                    .foregroundStyle(Color.white.opacity(0.9))
-                                    .kerning(0.5)
-                                    .rotationEffect(.degrees(0.3))
-                            }
+                                .rotationEffect(.degrees(0.8))
 
                             HStack(spacing: 16) {
                                 Button {
