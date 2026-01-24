@@ -7,7 +7,7 @@ struct StaffLinesView: View {
         VStack(spacing: lineSpacing) {
             ForEach(0..<5) { _ in
                 Capsule()
-                    .fill(Color.white.opacity(0.9))
+                    .fill(Color.white)
                     .frame(height: 2)
                     .shadow(color: .white.opacity(0.08), radius: 0.5, x: 0, y: 0.5)
             }

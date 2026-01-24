@@ -192,7 +192,7 @@ struct MusicSheetView: View {
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
         SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
         SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
-    ], title: "First Melody", isCorrect: false, progress: 1.42, onRestart: {
+    ], title: "First Melody", isCorrect: false, progress: 0.42, onRestart: {
         print("Restart")
     }, onClose: {
         print("Close")

@@ -12,7 +12,7 @@ struct NoteView: View {
                 .frame(width: noteSize, height: noteSize)
                 .overlay(
                     Circle()
-                        .stroke(Color.white.opacity(0.35), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
                 )
                 .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 1)
         }

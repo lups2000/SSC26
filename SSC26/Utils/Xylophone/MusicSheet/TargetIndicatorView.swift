@@ -8,7 +8,7 @@ struct TargetIndicatorView : View {
     var body: some View {
         Rectangle()
             .fill(color)
-            .opacity(0.5)
+            .opacity(0.6)
             .cornerRadius(15)
             .frame(width: 50, height: 80)
             .modifier(ShakeEffect(animatableData: shakeTrigger))
