@@ -80,7 +80,7 @@ struct MusicSheetView: View {
 
                     Spacer()
 
-                    if let progress, progress >= 0, progress <= 1 {
+                    if let progress, progress >= 0, progress < 1 {
                         HStack(spacing: 8) {
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -190,8 +190,6 @@ struct MusicSheetView: View {
         SheetNote(pitch: 3.2, color: .green, isTarget: false),    // F
         SheetNote(pitch: 2.1, color: .teal, isTarget: false),     // G
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
-        SheetNote(pitch: 0.1, color: .indigo, isTarget: false),   // B
-        SheetNote(pitch: -1.0, color: .purple, isTarget: false)    // C
     ], title: "First Melody", isCorrect: false, progress: 0.42, onRestart: {
         print("Restart")
     }, onClose: {

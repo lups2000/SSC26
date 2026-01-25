@@ -12,20 +12,20 @@ struct GuidedSongPlayerView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            HStack(alignment: .center, spacing: 16) {
-                MusicSheetView(
-                    notes: sheetNotes(),
-                    title: engine.song.title,
-                    isCorrect: engine.lastInputWasCorrect ?? true,
-                    progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count)),
-                    onRestart: {
-                        engine.reset()
-                    },
-                    onClose: onBack
-                )
-                .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                           value: engine.currentIndex)
-            }
+            MusicSheetView(
+                notes: sheetNotes(),
+                title: engine.song.title,
+                isCorrect: engine.lastInputWasCorrect ?? true,
+                progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count)),
+                onRestart: {
+                    engine.reset()
+                },
+                onClose: onBack
+            )
+            .frame(width: 650)
+            .animation(.spring(response: 0.35, dampingFraction: 0.8),
+                       value: engine.currentIndex)
+            
             XylophoneView(onPlayNote: { note in
                 engine.handleInput(note: note)
             })
@@ -43,11 +43,10 @@ struct GuidedSongPlayerView: View {
                 }
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func sheetNotes() -> [SheetNote] {
-        let windowSize = 6
+        let windowSize = 5
         let chunkStart = (engine.currentIndex / windowSize) * windowSize
         let chunkEnd = min(chunkStart + windowSize, engine.song.notes.count)
 
