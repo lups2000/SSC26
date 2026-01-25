@@ -172,7 +172,7 @@ struct MusicSheetView: View {
                     }
                 }
             }
-            .padding(.horizontal, 35)
+            .padding(.horizontal, 50)
         }
         .frame(width: 650, height: 300)
     }

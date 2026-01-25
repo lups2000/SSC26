@@ -9,6 +9,7 @@ struct GuidedSong: Identifiable {
 }
 
 struct GuidedSongsView: View {
+    @Binding var columnVisibility: NavigationSplitViewVisibility
 
     let guidedSongs: [GuidedSong] = [
         // --- LEVEL 1 ---
@@ -69,7 +70,11 @@ struct GuidedSongsView: View {
                 GuidedSongPlayerView(song: song) {
                     withAnimation {
                         selectedSong = nil
+                        columnVisibility = .all
                     }
+                }
+                .onAppear {
+                    columnVisibility = .detailOnly
                 }
             } else {
                 ScrollView {
@@ -86,6 +91,9 @@ struct GuidedSongsView: View {
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
+                }
+                .onAppear {
+                    columnVisibility = .all
                 }
             }
         }
@@ -107,6 +115,7 @@ struct GuidedSongsView: View {
                         SongCardView(song: song) {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                                 selectedSong = song
+                                columnVisibility = .detailOnly
                             }
                         }
                     }
@@ -126,5 +135,5 @@ struct GuidedSongsView: View {
 }
 
 #Preview {
-    GuidedSongsView()
+    GuidedSongsView(columnVisibility: .constant(.all))
 }

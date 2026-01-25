@@ -43,6 +43,9 @@ struct GuidedSongPlayerView: View {
                 }
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("")
+        
     }
     
     private func sheetNotes() -> [SheetNote] {

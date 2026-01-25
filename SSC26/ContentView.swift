@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var hasStarted = false
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     var body: some View {
         if !hasStarted {
@@ -9,7 +10,7 @@ struct ContentView: View {
                 hasStarted = true
             })
         } else {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $columnVisibility) {
                 List {
                     NavigationLink {
                         TutorialView()
@@ -18,7 +19,7 @@ struct ContentView: View {
                     }
 
                     NavigationLink {
-                        GuidedSongsView()
+                        GuidedSongsView(columnVisibility: $columnVisibility)
                     } label: {
                         Label("Practice", systemImage: "music.note.list")
                     }
