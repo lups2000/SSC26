@@ -72,14 +72,14 @@ struct GuidedSongPlayerView: View {
     
     private func pitch(for note: String) -> CGFloat {
         switch note {
-            case "C": return 6
-            case "D": return 5
-            case "E": return 4
-            case "F": return 3
-            case "G": return 2
-            case "A": return 1
-            case "B": return 0
-            case "C_H": return -1
+            case "C": return 6.5
+            case "D": return 5.4
+            case "E": return 4.3
+            case "F": return 3.2
+            case "G": return 2.1
+            case "A": return 1.0
+            case "B": return 0.1
+            case "C_H": return -0.8
             default: return 0
         }
     }
