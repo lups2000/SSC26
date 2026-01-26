@@ -4,91 +4,147 @@ struct SongCardView: View {
     let song: GuidedSong
     let onSelect: () -> Void
     var height: CGFloat? = nil
+    
+    @State private var isPressed = false
 
     var body: some View {
         Button(action: onSelect) {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 16) {
                 header
+                
+                Spacer()
+                
                 footer
             }
-            .padding(16)
+            .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: height)
+            .frame(minHeight: height ?? 160)
             .background(cardBackground)
             .overlay(cardOverlay)
-            .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
-            .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(isPressed ? 0.1 : 0.08), radius: isPressed ? 6 : 12, x: 0, y: isPressed ? 3 : 6)
+            .scaleEffect(isPressed ? 0.97 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
+            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .accessibilityElement(children: .combine)
             .accessibilityLabel(
                 {
                     var parts: [String] = ["Song: \(song.title)."]
                     let description = song.description
                     if !description.isEmpty {
-                        parts.append("Description: \(description)")
+                        parts.append(description)
                     }
-                    parts.append("Difficulty: \(song.difficulty) out of 3.")
+                    parts.append("Difficulty: \(difficultyLabel).")
+                    parts.append("\(song.notes.count) notes.")
                     return parts.joined(separator: " ")
                 }()
             )
+            .accessibilityAddTraits(.isButton)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SongCardButtonStyle(isPressed: $isPressed))
+    }
+}
+
+struct SongCardButtonStyle: ButtonStyle {
+    @Binding var isPressed: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .onChange(of: configuration.isPressed) { _, newValue in
+                isPressed = newValue
+            }
     }
 }
 
 private extension SongCardView {
     var header: some View {
-        HStack(alignment: .center, spacing: 12) {
-            iconCircle
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                iconCircle
+                Spacer()
+                difficultyBadge
+            }
+            
+            Text(song.title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(song.title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+            let description = song.description
+            if !description.isEmpty {
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
                     .multilineTextAlignment(.leading)
-
-                let description = song.description
-                if !description.isEmpty {
-                    Text(description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                }
             }
         }
     }
 
     var footer: some View {
-        HStack(spacing: 10) {
-            // No colors preview anymore
+        HStack(spacing: 8) {
+            Image(systemName: "music.note")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            
+            Text("\(song.notes.count) notes")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            
             Spacer()
-            difficultyView
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(.tertiary)
         }
     }
 
     var iconCircle: some View {
         ZStack {
             Circle()
-                .fill(LinearGradient(colors: [Color.accentColor.opacity(0.25), Color.accentColor.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width: 36, height: 36)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            difficultyColor.opacity(0.2),
+                            difficultyColor.opacity(0.4)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 40, height: 40)
+            
             Image(systemName: "music.note")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.primary)
-                .opacity(0.9)
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(difficultyColor)
         }
     }
-
-    var difficultyView: some View {
-        HStack(spacing: 3) {
-            ForEach(0..<3) { index in
-                Image(systemName: "music.note")
-                    .foregroundStyle(index < song.difficulty ? Color.accentColor : .secondary)
-                    .opacity(index < song.difficulty ? 1.0 : 0.35)
-                    .font(.system(size: 20, weight: .bold))
-                    .accessibilityHidden(true)
+    
+    var difficultyBadge: some View {
+        HStack(spacing: 2) {
+            ForEach(0..<song.difficulty, id: \.self) { _ in
+                Image(systemName: "star.fill")
+                    .font(.system(size: 12))
+                    .foregroundStyle(difficultyColor)
             }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background {
+            Capsule()
+                .fill(difficultyColor.opacity(0.15))
+        }
+    }
+    
+    var difficultyColor: Color {
+        switch song.difficulty {
+        case 1: return .green
+        case 2: return .orange
+        case 3: return .red
+        default: return .blue
         }
     }
 
@@ -101,22 +157,13 @@ private extension SongCardView {
     }
 
     var cardBackground: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        Color(uiColor: .systemBackground).opacity(0.95),
-                        Color(uiColor: .secondarySystemBackground).opacity(0.95)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+            .fill(.ultraThinMaterial)
     }
 
     var cardOverlay: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .strokeBorder(Color.black.opacity(0.08), lineWidth: 1)
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+            .strokeBorder(.white.opacity(0.3), lineWidth: 1)
     }
 }
 

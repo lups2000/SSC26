@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GuidedSong: Identifiable {
+struct GuidedSong: Identifiable, Equatable {
     let id = UUID()
     let title: String
     let description: String
@@ -58,8 +58,8 @@ struct GuidedSongsView: View {
     @State private var selectedSong: GuidedSong? = nil
 
     private let gridColumns = [
-        GridItem(.flexible(), spacing: 18),
-        GridItem(.flexible(), spacing: 18)
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
 
     var body: some View {
@@ -68,68 +68,188 @@ struct GuidedSongsView: View {
 
             if let song = selectedSong {
                 GuidedSongPlayerView(song: song) {
-                    withAnimation {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                         selectedSong = nil
                         columnVisibility = .all
                     }
                 }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .trailing).combined(with: .opacity)
+                ))
                 .onAppear {
                     columnVisibility = .detailOnly
                 }
             } else {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-
-                        Text("Pick a melody to start 🎵")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-
+                    VStack(alignment: .leading, spacing: 32) {
+                        heroSection
+                        
                         ForEach([1, 2, 3], id: \.self) { level in
                             levelSection(level)
                         }
-
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 16)
+                    .padding(.top, 20)
+                    .padding(.bottom, 40)
                 }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .leading).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
                 .onAppear {
                     columnVisibility = .all
                 }
             }
         }
-        .navigationTitle("Guided Songs")
+        .navigationTitle("Practice")
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: selectedSong)
     }
 
+    // MARK: - Hero Section
+    
+    private var heroSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [.purple.opacity(0.2), .blue.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 56, height: 56)
+                    
+                    Image(systemName: "music.note.list")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.purple, .blue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Learn Through Play")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("\(guidedSongs.count) songs across 3 levels")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            Text("Follow along with guided melodies to master the xylophone. Each song lights up the notes for you to play!")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+        }
+    }
+
+    // MARK: - Level Section
 
     @ViewBuilder
     private func levelSection(_ level: Int) -> some View {
         let songsForLevel = guidedSongs.filter { $0.difficulty == level }
 
         if !songsForLevel.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(levelTitle(level))
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .center, spacing: 12) {
+                    levelIcon(level)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(levelTitle(level))
+                            .font(.title3)
+                            .fontWeight(.bold)
+                        
+                        Text(levelDescription(level))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(levelTitle(level)). \(levelDescription(level))")
 
-                LazyVGrid(columns: gridColumns, spacing: 18) {
+                LazyVGrid(columns: gridColumns, spacing: 16) {
                     ForEach(songsForLevel) { song in
                         SongCardView(song: song) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                                 selectedSong = song
                                 columnVisibility = .detailOnly
                             }
                         }
+                        .transition(.scale(scale: 0.95).combined(with: .opacity))
                     }
                 }
             }
         }
     }
+    
+    // MARK: - Helper Views
+    
+    private func levelIcon(_ level: Int) -> some View {
+        ZStack {
+            Circle()
+                .fill(levelColor(level).opacity(0.15))
+                .frame(width: 44, height: 44)
+            
+            Text(levelEmoji(level))
+                .font(.system(size: 22))
+        }
+    }
+    
+    // MARK: - Helper Functions
 
     private func levelTitle(_ level: Int) -> String {
         switch level {
-        case 1: return "🟢 Level 1 – Getting Started"
-        case 2: return "🟡 Level 2 – Learning Songs"
-        case 3: return "🔴 Level 3 – Challenge Mode"
+        case 1: return "Level 1"
+        case 2: return "Level 2"
+        case 3: return "Level 3"
         default: return "Level \(level)"
+        }
+    }
+    
+    private func levelDescription(_ level: Int) -> String {
+        switch level {
+        case 1: return "Getting Started"
+        case 2: return "Learning Songs"
+        case 3: return "Challenge Mode"
+        default: return "Advanced"
+        }
+    }
+    
+    private func levelEmoji(_ level: Int) -> String {
+        switch level {
+        case 1: return "🌱"
+        case 2: return "🎵"
+        case 3: return "🚀"
+        default: return "🎵"
+        }
+    }
+    
+    private func levelColor(_ level: Int) -> Color {
+        switch level {
+        case 1: return .green
+        case 2: return .orange
+        case 3: return .red
+        default: return .blue
         }
     }
 }
