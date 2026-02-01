@@ -25,7 +25,7 @@ struct ContentView: View {
                     }
 
                     NavigationLink {
-                        XylophoneView(onPlayNote: { _ in print("ciao") })
+                        FreePlayView()
                     } label: {
                         Label("Play XyloFingers", systemImage: "hand.point.up.fill")
                     }
