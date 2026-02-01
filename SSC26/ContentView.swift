@@ -13,7 +13,7 @@ struct ContentView: View {
             NavigationSplitView(columnVisibility: $columnVisibility) {
                 List {
                     NavigationLink {
-                        TutorialView()
+                        GuideView()
                     } label: {
                         Label("Guide", systemImage: "book.fill")
                     }
@@ -32,7 +32,7 @@ struct ContentView: View {
                 }
                 .navigationTitle("XyloFingers")
             } detail: {
-                TutorialView()
+                GuideView()
             }
 
         }

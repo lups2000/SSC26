@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TutorialView: View {
+struct GuideView: View {
     var body: some View {
         ZStack {
             BackgroundGradient()
@@ -10,10 +10,10 @@ struct TutorialView: View {
                     .padding()
             }
         }
-        .navigationTitle("Tutorial")
+        .navigationTitle("Guide")
     }
 }
 
 #Preview {
-    TutorialView()
+    GuideView()
 }
