@@ -7,6 +7,9 @@ struct FreePlayView: View {
 
     /// Tracks whether the camera session is actually running so we can show a status indicator.
     @State private var isTracking: Bool = false
+    
+    /// App settings for hand tracking toggle
+    @State private var settings = AppSettings.shared
 
     // MARK: - Pinch Detection State
 
@@ -29,11 +32,13 @@ struct FreePlayView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // MARK: - Camera Feed (behind everything)
-                CameraView { points in
-                    overlayPoints = points
-                    isTracking = !points.isEmpty
-                    handlePinch(points)
+                // MARK: - Camera Feed (behind everything) - Only show if hand tracking is enabled
+                if settings.isHandTrackingEnabled {
+                    CameraView { points in
+                        overlayPoints = points
+                        isTracking = !points.isEmpty
+                        handlePinch(points)
+                    }
                 }
 
                 // MARK: - Background gradient (semi-transparent so the camera bleeds through)
@@ -72,35 +77,114 @@ struct FreePlayView: View {
                 // CameraViewController returns [thumbTip, indexTip] in that order.
                 // We draw a red dot on the index finger tip (index 1) so you can
                 // see exactly where the tracker thinks your index finger is.
-                ForEach(overlayPoints.indices, id: \.self) { i in
-                    let point = overlayPoints[i]
-                    Circle()
-                        .fill(i == 1 ? Color.red : Color.yellow) // red = index, yellow = thumb
-                        .frame(width: 16, height: 16)
-                        .position(x: point.x, y: point.y)
+                if settings.isHandTrackingEnabled {
+                    ForEach(overlayPoints.indices, id: \.self) { i in
+                        let point = overlayPoints[i]
+                        Circle()
+                            .fill(i == 1 ? Color.red : Color.yellow) // red = index, yellow = thumb
+                            .frame(width: 16, height: 16)
+                            .position(x: point.x, y: point.y)
+                    }
                 }
 
-                // MARK: - Tracking status badge
+                // MARK: - Control overlay (top-right)
                 VStack {
                     HStack {
-                        Circle()
-                            .fill(isTracking ? Color.green : Color.red)
-                            .frame(width: 12, height: 12)
-                        Text(isTracking ? "Tracking Active" : "Tracking Inactive")
-                            .font(.caption)
-                            .foregroundColor(.white)
+                        Spacer()
+                        
+                        VStack(spacing: 10) {
+                            // Hand tracking toggle button - Improved UI
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    settings.isHandTrackingEnabled.toggle()
+                                    if !settings.isHandTrackingEnabled {
+                                        isTracking = false
+                                        overlayPoints = []
+                                    }
+                                }
+                            }) {
+                                VStack(spacing: 8) {
+                                    // Icon
+                                    ZStack {
+                                        Circle()
+                                            .fill(settings.isHandTrackingEnabled ? 
+                                                LinearGradient(colors: [.blue.opacity(0.3), .blue.opacity(0.2)], startPoint: .top, endPoint: .bottom) :
+                                                LinearGradient(colors: [.orange.opacity(0.3), .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                                            )
+                                            .frame(width: 56, height: 56)
+                                        
+                                        Image(systemName: settings.isHandTrackingEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                                            .font(.system(size: 24, weight: .semibold))
+                                            .foregroundStyle(settings.isHandTrackingEnabled ? .blue : .orange)
+                                    }
+                                    
+                                    // Label
+                                    VStack(spacing: 2) {
+                                        Text(settings.isHandTrackingEnabled ? "Hand Tracking" : "Touch Mode")
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                        
+                                        Text(settings.isHandTrackingEnabled ? "TAP TO DISABLE" : "TAP TO ENABLE")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(16)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .fill(.ultraThinMaterial)
+                                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
+                                }
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            
+                            // Tracking status badge (only show when hand tracking is enabled)
+                            if settings.isHandTrackingEnabled {
+                                HStack(spacing: 8) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(isTracking ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
+                                            .frame(width: 20, height: 20)
+                                        
+                                        Circle()
+                                            .fill(isTracking ? Color.green : Color.red)
+                                            .frame(width: 10, height: 10)
+                                    }
+                                    
+                                    Text(isTracking ? "Active" : "Inactive")
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background {
+                                    Capsule()
+                                        .fill(.ultraThinMaterial)
+                                        .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 2)
+                                }
+                                .overlay {
+                                    Capsule()
+                                        .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+                                }
+                                .transition(.scale.combined(with: .opacity))
+                            }
+                        }
                     }
-                    .padding(8)
-                    .background(Color.black.opacity(0.6))
-                    .cornerRadius(8)
 
                     Spacer()
                 }
-                .padding()
+                .padding(.top, 50)
+                .padding(.trailing, 10)
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .ignoresSafeArea()
+        .navigationTitle("Play XyloFingers")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: - Pinch Handling
