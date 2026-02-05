@@ -32,10 +32,6 @@ struct GuidedSongPlayerView: View {
         }
         .padding()
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: engine.currentIndex)
-        .background(
-            LinearGradient(colors: [.blue.opacity(0.06), .purple.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                .ignoresSafeArea()
-        )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button(action: onBack) {

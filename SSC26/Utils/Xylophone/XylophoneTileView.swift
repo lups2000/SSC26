@@ -7,6 +7,26 @@ struct XylophoneTileView: View {
     var action: (() -> Void)? = nil
 
     @State private var isPressed = false
+    @Environment(\.colorScheme) private var colorScheme
+    
+    /// Returns a darker, less saturated version of the color for dark mode
+    private var adaptiveColor: Color {
+        guard colorScheme == .dark else { return color }
+        
+        // Extract color components and reduce brightness/saturation for dark mode
+        let uiColor = UIColor(color)
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        
+        // Reduce brightness and saturation slightly for dark mode
+        return Color(hue: Double(hue), 
+                    saturation: Double(saturation * 0.95),
+                    brightness: Double(brightness * 0.8))
+    }
 
     var body: some View {
         Button(action: {
@@ -25,13 +45,13 @@ struct XylophoneTileView: View {
             }
         }) {
             Rectangle()
-                .fill(color)
+                .fill(adaptiveColor)
                 .frame(height: height)
                 .cornerRadius(12)
                 .overlay(
                     VStack {
                         Circle()
-                            .fill(Color.white)
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
                             .frame(width: 30, height: 30)
                             .padding(.top, 20)
                         Spacer()
@@ -42,7 +62,7 @@ struct XylophoneTileView: View {
                             .shadow(radius: 2)
                         Spacer()
                         Circle()
-                            .fill(Color.white)
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
                             .frame(width: 30, height: 30)
                             .padding(.bottom, 20)
                     }
@@ -51,7 +71,7 @@ struct XylophoneTileView: View {
                 .scaleEffect(isPressed ? 0.97 : 1)
                 .offset(y: isPressed ? 4 : 0)
                 .shadow(
-                    color: color.opacity(isPressed ? 0.15 : 0.35),
+                    color: adaptiveColor.opacity(isPressed ? 0.15 : 0.35),
                     radius: isPressed ? 4 : 8,
                     x: 0,
                     y: isPressed ? 2 : 6

@@ -4,10 +4,26 @@ struct WelcomeView: View {
     var startAction: () -> Void
     @State private var isPressed = false
     @State private var pulse = false // for continuous scaling
+    @Environment(\.colorScheme) private var colorScheme
     
     // Colors
-    let accentGreen = Color(red: 0.29, green: 0.68, blue: 0.34)
-    let bodyText = Color(red: 0.29, green: 0.37, blue: 0.33)
+    var accentGreen: Color {
+        colorScheme == .dark ? 
+            Color(red: 0.4, green: 0.78, blue: 0.45) : 
+            Color(red: 0.29, green: 0.68, blue: 0.34)
+    }
+    
+    var bodyText: Color {
+        colorScheme == .dark ? 
+            Color(red: 0.85, green: 0.90, blue: 0.88) : 
+            Color(red: 0.29, green: 0.37, blue: 0.33)
+    }
+    
+    var descriptionBackground: Color {
+        colorScheme == .dark ?
+            Color(red: 0.20, green: 0.18, blue: 0.12).opacity(0.6) :
+            Color(red: 1.0, green: 0.96, blue: 0.78).opacity(0.7)
+    }
     
     var body: some View {
         ZStack {
@@ -41,7 +57,7 @@ struct WelcomeView: View {
                     .padding(.horizontal, 28)
                     .background(
                         RoundedRectangle(cornerRadius: 28, style: .continuous)
-                            .fill(Color(red: 1.0, green: 0.96, blue: 0.78).opacity(0.7))
+                            .fill(descriptionBackground)
                     )
                                 
                 // Circular pulsing button

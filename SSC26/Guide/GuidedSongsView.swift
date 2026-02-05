@@ -10,6 +10,7 @@ struct GuidedSong: Identifiable, Equatable {
 
 struct GuidedSongsView: View {
     @Binding var columnVisibility: NavigationSplitViewVisibility
+    @Environment(\.colorScheme) private var colorScheme
 
     let guidedSongs: [GuidedSong] = [
         // --- LEVEL 1 ---
@@ -115,7 +116,9 @@ struct GuidedSongsView: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [.purple.opacity(0.2), .blue.opacity(0.2)],
+                                colors: colorScheme == .dark ? 
+                                    [.purple.opacity(0.4), .blue.opacity(0.4)] :
+                                    [.purple.opacity(0.2), .blue.opacity(0.2)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -126,7 +129,9 @@ struct GuidedSongsView: View {
                         .font(.system(size: 24, weight: .semibold))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.purple, .blue],
+                                colors: colorScheme == .dark ?
+                                    [.purple.opacity(0.9), .blue.opacity(0.9)] :
+                                    [.purple, .blue],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -152,12 +157,20 @@ struct GuidedSongsView: View {
         .padding(20)
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? 
+                    Color(white: 0.15).opacity(0.8) : 
+                    Color.white.opacity(0.8)
+                )
                 .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
         }
         .overlay {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+                .strokeBorder(
+                    colorScheme == .dark ?
+                        Color.white.opacity(0.1) :
+                        Color.white.opacity(0.2),
+                    lineWidth: 1
+                )
         }
     }
 

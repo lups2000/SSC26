@@ -6,6 +6,7 @@ struct SongCardView: View {
     var height: CGFloat? = nil
     
     @State private var isPressed = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Button(action: onSelect) {
@@ -158,12 +159,18 @@ private extension SongCardView {
 
     var cardBackground: some View {
         RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .fill(.ultraThinMaterial)
+            .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
+            .opacity(colorScheme == .dark ? 0.9 : 0.95)
     }
 
     var cardOverlay: some View {
         RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .strokeBorder(.white.opacity(0.3), lineWidth: 1)
+            .strokeBorder(
+                colorScheme == .dark ? 
+                    Color.white.opacity(0.15) : 
+                    Color.white.opacity(0.3), 
+                lineWidth: 1
+            )
     }
 }
 
