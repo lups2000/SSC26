@@ -2,27 +2,94 @@ import Foundation
 import UIKit
 import AVFoundation
 import Vision
+import SwiftUI
 
-var trackingConfidence: Float = 0.2
+// MARK: - SwiftUI Wrapper
 
-final class CameraViewController: UIViewController {
-    private var cameraFeedSession: AVCaptureSession?
-    override func loadView() {
-        view = CameraPreview()
+/// SwiftUI wrapper that embeds the camera view controller into SwiftUI views.
+/// Handles hand tracking and provides converted finger tip positions to the parent view.
+struct CameraView: UIViewControllerRepresentable {
+    /// Callback that receives an array of finger tip positions in the view's coordinate system.
+    var pointsProcessorHandler: (([CGPoint]) -> Void)?
+
+    func makeUIViewController(context: Context) -> CameraViewController {
+        let controller = CameraViewController()
+        controller.pointsProcessorHandler = pointsProcessorHandler
+        return controller
     }
-    private var cameraView: CameraPreview { view as! CameraPreview }
+    
+    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
+        // Update the handler when SwiftUI state changes
+        uiViewController.pointsProcessorHandler = pointsProcessorHandler
+    }
+}
+
+// MARK: - Hand Tracking Configuration
+
+/// Minimum confidence threshold for detected hand points (0.0 - 1.0).
+/// Points below this confidence level will be filtered out.
+var trackingConfidence: Float = 0.3
+
+// MARK: - Camera View Controller
+
+/// Manages the camera feed, hand pose detection, and coordinates conversion.
+/// Uses the front-facing camera to track thumb and index finger positions.
+final class CameraViewController: UIViewController {
+    // MARK: - Properties
+    
+    /// The AVCapture session that manages camera input and video output.
+    private var cameraFeedSession: AVCaptureSession?
+    
+    /// Layer that displays the live camera preview.
+    private let previewLayer = AVCaptureVideoPreviewLayer()
+    
+    /// Serial dispatch queue for processing video frames.
+    private let videoDataOutputQueue = DispatchQueue(
+        label: "CameraFeedOutput",
+        qos: .userInteractive
+    )
+    
+    /// Vision request for detecting hand poses in camera frames.
+    private let handPoseRequest: VNDetectHumanHandPoseRequest = {
+        let request = VNDetectHumanHandPoseRequest()
+        request.maximumHandCount = 1
+        return request
+    }()
+    
+    /// Callback that receives converted finger tip positions for the SwiftUI parent view.
+    var pointsProcessorHandler: (([CGPoint]) -> Void)?
+    
+    // MARK: - Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Add the camera preview layer to the view hierarchy
+        view.layer.addSublayer(previewLayer)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Update preview layer to match view bounds
+        previewLayer.frame = view.bounds
+        // Adjust rotation based on device orientation
+        if let connection = previewLayer.connection {
+            updateVideoRotationAngle(on: connection)
+        }
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {
+            // Set up camera session on first appearance
             if cameraFeedSession == nil {
                 try setupAVSession()
-                cameraView.previewLayer.session = cameraFeedSession
-                cameraView.previewLayer.videoGravity = .resizeAspectFill
-                if let connection = self.cameraView.previewLayer.connection {
+                previewLayer.session = cameraFeedSession
+                previewLayer.videoGravity = .resizeAspectFill
+                if let connection = previewLayer.connection {
                     updateVideoRotationAngle(on: connection)
                 }
             }
+            // Start camera feed on background thread
             DispatchQueue.global(qos: .userInteractive).async {
                 self.cameraFeedSession?.startRunning()
             }
@@ -32,16 +99,12 @@ final class CameraViewController: UIViewController {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
+        // Stop camera when view disappears to save battery
         cameraFeedSession?.stopRunning()
         super.viewDidDisappear(animated)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let connection = self.cameraView.previewLayer.connection {
-            updateVideoRotationAngle(on: connection)
-        }
-    }
+    // MARK: - Camera Setup
     
     /// Updates the video rotation angle on the given connection based on the
     /// current device / interface orientation. Replaces the deprecated
@@ -83,12 +146,9 @@ final class CameraViewController: UIViewController {
         }
     }
     
-    private let videoDataOutputQueue = DispatchQueue(
-        label: "CameraFeedOutput",
-        qos: .userInteractive
-    )
-    
+    /// Configures the AVCapture session with front camera input and video data output.
     func setupAVSession() throws {
+        // Get the front-facing camera
         guard let videoDevice = AVCaptureDevice.default( .builtInWideAngleCamera, for: .video, position: .front) else {
             print("Error finding front facing camera.")
             return
@@ -98,6 +158,7 @@ final class CameraViewController: UIViewController {
             return
         }
         
+        // Create and configure the capture session
         let session = AVCaptureSession()
         session.beginConfiguration()
         session.sessionPreset = AVCaptureSession.Preset.high
@@ -107,6 +168,7 @@ final class CameraViewController: UIViewController {
         }
         session.addInput(deviceInput)
 
+        // Add video output and set this controller as the delegate
         let dataOutput = AVCaptureVideoDataOutput()
         if session.canAddOutput(dataOutput) {
             session.addOutput(dataOutput)
@@ -119,37 +181,43 @@ final class CameraViewController: UIViewController {
         cameraFeedSession = session
     }
     
+    // MARK: - Hand Tracking
     
-    private let handPoseRequest: VNDetectHumanHandPoseRequest = {
-        let request = VNDetectHumanHandPoseRequest()
-        request.maximumHandCount = 1
-        return request
-    }()
-    
-    var pointsProcessorHandler: (([CGPoint]) -> Void)?
-    
+    /// Converts detected finger tip positions from camera space to view coordinates
+    /// and passes them to the handler closure.
     func processPoints(_ fingerTips: [CGPoint]) {
         let convertedPoints = fingerTips.map {
-            cameraView.previewLayer.layerPointConverted(fromCaptureDevicePoint: $0)
+            previewLayer.layerPointConverted(fromCaptureDevicePoint: $0)
         }
         pointsProcessorHandler?(convertedPoints)
     }
 }
     
+// MARK: - Video Frame Processing
+
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    /// Called for each video frame captured by the camera.
+    /// Performs hand pose detection and extracts thumb and index finger positions.
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         var fingerTips: [CGPoint] = []
+        
+        // Ensure points are processed on the main thread after detection
         defer {
             DispatchQueue.main.sync {
                 self.processPoints(fingerTips)
             }
         }
+        
+        // Create Vision request handler from the camera frame
         let handHandler = VNImageRequestHandler(cmSampleBuffer: sampleBuffer, orientation: .up)
         do {
+            // Perform hand pose detection
             try handHandler.perform([handPoseRequest])
             guard let results = handPoseRequest.results?.prefix(1), !results.isEmpty  else {
                 return
             }
+            
+            // Extract thumb and index finger tip positions
             var recognizedPoints: [VNRecognizedPoint] = []
             try results.forEach { point in
                 let fingers = try point.recognizedPoints(.all)
@@ -157,6 +225,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                 recognizedPoints.append(fingers[.indexTip]!)
             }
             
+            // Filter by confidence and convert to CGPoint with flipped Y coordinate
             fingerTips = recognizedPoints.filter {
                 $0.confidence > trackingConfidence
             }
