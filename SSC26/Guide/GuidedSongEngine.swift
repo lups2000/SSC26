@@ -4,7 +4,7 @@ import Combine
 
 @MainActor
 @Observable
-final class GuidedSongEngine: Observable {
+final class GuidedSongEngine {
     private(set) var song: GuidedSong
     private(set) var currentIndex: Int = 0
     private(set) var isCompleted: Bool = false
