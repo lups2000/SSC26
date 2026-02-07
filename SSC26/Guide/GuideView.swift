@@ -60,10 +60,10 @@ struct GuideView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        handTrackingSteps
+                        // Interactive toggle control
+                        handTrackingToggleControl
                         
-                        // Toggle reminder
-                        toggleReminderCard
+                        handTrackingSteps
                     }
                     
                     Divider()
@@ -87,21 +87,6 @@ struct GuideView: View {
             }
         }
         .navigationTitle("Guide")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        settings.isHandTrackingEnabled.toggle()
-                    }
-                }) {
-                    Label(
-                        settings.isHandTrackingEnabled ? "Hand Tracking" : "Touch Mode",
-                        systemImage: settings.isHandTrackingEnabled ? "hand.raised.fill" : "hand.raised.slash.fill"
-                    )
-                    .labelStyle(.titleAndIcon)
-                }
-            }
-        }
     }
     
     // MARK: - Header Section
@@ -260,6 +245,80 @@ struct GuideView: View {
     }
     
     // MARK: - Toggle Reminder Card
+    
+    private var handTrackingToggleControl: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                settings.isHandTrackingEnabled.toggle()
+            }
+        }) {
+            HStack(spacing: 16) {
+                // Icon side
+                ZStack {
+                    Circle()
+                        .fill(
+                            settings.isHandTrackingEnabled ?
+                                LinearGradient(colors: [.green.opacity(0.3), .green.opacity(0.2)], startPoint: .top, endPoint: .bottom) :
+                                LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                        )
+                        .frame(width: 56, height: 56)
+                    
+                    Image(systemName: settings.isHandTrackingEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(settings.isHandTrackingEnabled ? .green : .gray)
+                }
+                
+                // Text content
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(settings.isHandTrackingEnabled ? "Hand Tracking Enabled" : "Hand Tracking Disabled")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(colorScheme == .dark ? .white : .primary)
+                    
+                    Text(settings.isHandTrackingEnabled ? 
+                        "Tap to switch to Touch Mode" : 
+                        "Tap to enable Hand Tracking"
+                    )
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                // Toggle indicator
+                ZStack {
+                    Capsule()
+                        .fill(settings.isHandTrackingEnabled ? Color.green.opacity(0.3) : Color.gray.opacity(0.2))
+                        .frame(width: 56, height: 32)
+                    
+                    Capsule()
+                        .fill(settings.isHandTrackingEnabled ? Color.green : Color.gray)
+                        .frame(width: 26, height: 26)
+                        .offset(x: settings.isHandTrackingEnabled ? 12 : -12)
+                }
+            }
+            .padding(20)
+            .background {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(
+                        settings.isHandTrackingEnabled ?
+                            (colorScheme == .dark ? Color.green.opacity(0.15) : Color.green.opacity(0.08)) :
+                            (colorScheme == .dark ? Color(white: 0.15).opacity(0.7) : Color.white.opacity(0.8))
+                    )
+                    .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(
+                        settings.isHandTrackingEnabled ?
+                            Color.green.opacity(0.4) :
+                            (colorScheme == .dark ? Color.white.opacity(0.1) : Color.white.opacity(0.2)),
+                        lineWidth: 2
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+    }
     
     private var toggleReminderCard: some View {
         HStack(spacing: 12) {
