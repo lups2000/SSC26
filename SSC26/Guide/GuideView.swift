@@ -13,36 +13,8 @@ struct GuideView: View {
                     // Header Section
                     headerSection
                     
-                    // Quick Start Cards
-                    VStack(spacing: 20) {
-                        Text("Getting Started")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        instructionCard(
-                            icon: "hand.tap.fill",
-                            iconColor: .blue,
-                            title: "1. Choose Your Mode",
-                            description: "You can play XyloFingers in two ways:",
-                            steps: [
-                                "👆 Touch Mode: Tap the xylophone bars directly",
-                                "✋ Hand Tracking: Use hand gestures in the air"
-                            ]
-                        )
-                        
-                        instructionCard(
-                            icon: "music.note.list",
-                            iconColor: .purple,
-                            title: "2. Explore the App",
-                            description: "Three ways to learn and play:",
-                            steps: [
-                                "📖 Guide: Learn how to use the app (you are here!)",
-                                "🎵 Practice: Follow guided songs step-by-step",
-                                "🎹 Play XyloFingers: Free play with any mode"
-                            ]
-                        )
-                    }
+                    // Quick Actions
+                    quickActionsSection
                     
                     Divider()
                         .padding(.vertical, 8)
@@ -69,24 +41,58 @@ struct GuideView: View {
                     Divider()
                         .padding(.vertical, 8)
                     
-                    // Tips Section
-                    VStack(spacing: 20) {
-                        Text("Pro Tips")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        tipCard(icon: "lightbulb.fill", color: .yellow, tip: "Start with Level 1 songs in Practice mode to build confidence")
-                        tipCard(icon: "speaker.wave.3.fill", color: .orange, tip: "Make sure your device volume is up to hear the beautiful xylophone sounds")
-                        tipCard(icon: "figure.play", color: .green, tip: "In hand tracking mode, keep your hand steady and make clear pinch gestures")
-                        tipCard(icon: "star.fill", color: .pink, tip: "Practice makes perfect! Play songs multiple times to master them")
-                    }
+                    // Tips
+                    tipsSection
                 }
                 .padding(24)
                 .padding(.bottom, 40)
             }
         }
         .navigationTitle("Guide")
+    }
+    
+    // MARK: - Quick Actions
+    
+    private var quickActionsSection: some View {
+        VStack(spacing: 16) {
+            Text("Getting Started")
+                .font(.title2)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                quickActionCard(icon: "hand.tap.fill", color: .blue, title: "Touch Mode", subtitle: "Tap to play")
+                quickActionCard(icon: "hand.raised.fill", color: .green, title: "Hand Tracking", subtitle: "Gesture control")
+                quickActionCard(icon: "music.note.list", color: .purple, title: "Practice", subtitle: "Follow songs")
+                quickActionCard(icon: "music.quarternote.3", color: .orange, title: "Free Play", subtitle: "Explore sounds")
+            }
+        }
+    }
+    
+    private func quickActionCard(icon: String, color: Color, title: String, subtitle: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 32, weight: .semibold))
+                .foregroundStyle(color)
+            
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 20)
+        .background {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(colorScheme == .dark ? Color(white: 0.15).opacity(0.7) : Color.white.opacity(0.8))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(color.opacity(0.3), lineWidth: 1.5)
+        }
     }
     
     // MARK: - Header Section
@@ -320,131 +326,43 @@ struct GuideView: View {
         .buttonStyle(.plain)
     }
     
-    private var toggleReminderCard: some View {
-        HStack(spacing: 12) {
-            Image(systemName: settings.isHandTrackingEnabled ? "checkmark.circle.fill" : "info.circle.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(settings.isHandTrackingEnabled ? .green : .orange)
+
+    
+    // MARK: - Tips
+    
+    private var tipsSection: some View {
+        VStack(spacing: 12) {
+            Text("Pro Tips")
+                .font(.title2)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(settings.isHandTrackingEnabled ? "Hand Tracking is ON" : "Hand Tracking is OFF")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Text(settings.isHandTrackingEnabled ? 
-                    "You can now use hand gestures to play!" : 
-                    "Currently in Touch Mode. Tap the toggle button to enable hand tracking."
-                )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding(16)
-        .background {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(
-                    settings.isHandTrackingEnabled ?
-                        Color.green.opacity(colorScheme == .dark ? 0.2 : 0.1) :
-                        Color.orange.opacity(colorScheme == .dark ? 0.2 : 0.1)
-                )
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(
-                    settings.isHandTrackingEnabled ?
-                        Color.green.opacity(0.3) :
-                        Color.orange.opacity(0.3),
-                    lineWidth: 1.5
-                )
+            tipRow(icon: "lightbulb.fill", color: .yellow, tip: "Start with Level 1 songs")
+            tipRow(icon: "speaker.wave.3.fill", color: .orange, tip: "Turn up your volume")
+            tipRow(icon: "hand.pinch.fill", color: .green, tip: "Make clear pinch gestures")
+            tipRow(icon: "star.fill", color: .pink, tip: "Practice makes perfect!")
         }
     }
     
-    // MARK: - Helper Functions
-    
-    private func instructionCard(icon: String, iconColor: Color, title: String, description: String, steps: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(iconColor.opacity(0.15))
-                        .frame(width: 44, height: 44)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(iconColor)
-                }
-                
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.bold)
-            }
-            
-            Text(description)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(steps, id: \.self) { step in
-                    Text(step)
-                        .font(.subheadline)
-                        .padding(.leading, 8)
-                }
-            }
-        }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(colorScheme == .dark ? 
-                    Color(white: 0.15).opacity(0.7) : 
-                    Color.white.opacity(0.8)
-                )
-                .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 4)
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(
-                    colorScheme == .dark ?
-                        Color.white.opacity(0.1) :
-                        Color.white.opacity(0.2),
-                    lineWidth: 1
-                )
-        }
-    }
-    
-    private func tipCard(icon: String, color: Color, tip: String) -> some View {
+    private func tipRow(icon: String, color: Color, tip: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 22, weight: .semibold))
+                .font(.title3)
                 .foregroundStyle(color)
                 .frame(width: 32)
             
             Text(tip)
                 .font(.subheadline)
-                .fixedSize(horizontal: false, vertical: true)
             
-            Spacer(minLength: 0)
+            Spacer()
         }
-        .padding(16)
-        .background {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(colorScheme == .dark ? 
-                    Color(white: 0.12).opacity(0.5) : 
-                    Color.white.opacity(0.6)
-                )
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(
-                    colorScheme == .dark ?
-                        Color.white.opacity(0.08) :
-                        Color.white.opacity(0.15),
-                    lineWidth: 1
-                )
-        }
+        .padding(12)
+        .background(colorScheme == .dark ? Color(white: 0.12).opacity(0.5) : Color.white.opacity(0.6))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
+    
+    // MARK: - Helper Functions
+
 }
 
 #Preview {
