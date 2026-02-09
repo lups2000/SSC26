@@ -31,20 +31,20 @@ struct ChalkboardBackground: View {
                     VStack {
                         Spacer()
                         ChalkDustBottomEdge()
-                            .frame(height: 10)
+                            .frame(height: 7)
                     }
                     
                     // Top edge
                     VStack {
                         ChalkDustTopEdge()
-                            .frame(height: 10)
+                            .frame(height: 7)
                         Spacer()
                     }
                     
                     // Left edge
                     HStack {
                         ChalkDustLeftEdge()
-                            .frame(width: 10)
+                            .frame(width: 7)
                         Spacer()
                     }
                     
@@ -52,7 +52,7 @@ struct ChalkboardBackground: View {
                     HStack {
                         Spacer()
                         ChalkDustRightEdge()
-                            .frame(width: 10)
+                            .frame(width: 7)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -199,7 +199,7 @@ struct ChalkDustBottomEdge: View {
             // Main dust gradient
             let mainDustGradient = Gradient(colors: [
                 .clear,
-                Color.white.opacity(0.08),
+                Color.white.opacity(0.15),
                 Color.white.opacity(0.12),
                 Color.white.opacity(0.06),
             ])
@@ -447,16 +447,51 @@ struct ChalkboardTray: View {
                     )
                     .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 4)
                 
-                // Eraser
-                HStack(spacing: 0) {
+                HStack(spacing: 10) {
                     Spacer()
-                    
+
+                    // Chalk pieces
+                    ZStack(alignment: .leading) {
+                        Capsule(style: .continuous)
+                            .fill(Color.white)
+                            .frame(width: 40, height: 8)
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                            )
+                            .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+                            .rotationEffect(.degrees(-4))
+                            .offset(y: -4)
+
+                        Capsule(style: .continuous)
+                            .fill(Color.white.opacity(0.95))
+                            .frame(width: 30, height: 8)
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                            )
+                            .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+                            .rotationEffect(.degrees(4))
+                            .offset(x: -50, y: -3)
+                        Capsule(style: .continuous)
+                            .fill(Color.white.opacity(0.95))
+                            .frame(width: 35, height: 8)
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                            )
+                            .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+                            .rotationEffect(.degrees(2))
+                            .offset(x: 130, y: -3)
+                    }
+
+                    // Eraser
                     ChalkEraser()
                         .offset(y: -10)
-                    
+
                     Spacer()
                 }
-                .frame(width: 200)
+                .frame(width: 260)
             }
             
             Spacer()

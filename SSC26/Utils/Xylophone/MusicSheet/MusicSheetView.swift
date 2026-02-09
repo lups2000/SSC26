@@ -32,6 +32,48 @@ struct ShakeEffect: GeometryEffect {
     }
 }
 
+private struct EngravedNoteView: View {
+    let note: SheetNote
+    let noteSize: CGFloat
+    let stemLength: CGFloat = 35
+
+    private var stemUp: Bool { note.pitch >= 0 }
+
+    var body: some View {
+        ZStack {
+            // Ledger line (simple: show one if far from staff)
+            if abs(note.pitch) > 6.5 { // tune threshold to mapping
+                Rectangle()
+                    .fill(Color.white)
+                    .frame(width: noteSize * 1.6, height: 1.5)
+            }
+
+            // Notehead
+            Ellipse()
+                .fill(Color.white)
+                .frame(width: noteSize * 1.1, height: noteSize)
+                .rotationEffect(.degrees(-20))
+                .overlay(
+                    Ellipse()
+                        .stroke(Color.black.opacity(0.15), lineWidth: 0.0)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 1, x: 0, y: 1)
+                .overlay(
+                    Ellipse()
+                        .stroke(Color.white.opacity(0.9), lineWidth: 1)
+                        .rotationEffect(.degrees(-20))
+                )
+
+            // Stem (white to match ink on chalkboard; tweak if needed)
+            Rectangle()
+                .fill(Color.white)
+                .frame(width: 2.5, height: stemLength)
+                .offset(x: stemUp ? noteSize * 0.55 : -noteSize * 0.55,
+                        y: stemUp ? -stemLength/2 : stemLength/2)
+        }
+    }
+}
+
 struct MusicSheetView: View {
     let notes: [SheetNote]
     let title: String?
@@ -81,20 +123,42 @@ struct MusicSheetView: View {
                     Spacer()
 
                     if let progress, progress >= 0, progress < 1 {
-                        HStack(spacing: 8) {
                             ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                    .fill(Color.white.opacity(0.15))
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color.white.opacity(0.12), Color.white.opacity(0.08)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                                    )
+                                    .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+
                                 GeometryReader { geo in
-                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                        .fill(Color.white)
-                                        .frame(width: max(0, min(geo.size.width, geo.size.width * progress)))
+                                    let w = max(0, min(geo.size.width, geo.size.width * progress))
+                                    Capsule()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.white, Color.white.opacity(0.85)],
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                                        .frame(width: w)
+                                        .overlay(
+                                            Capsule()
+                                                .fill(Color.white.opacity(0.35))
+                                                .frame(width: w, height: 2)
+                                                .offset(y: -6)
+                                        )
+                                        .animation(.easeOut(duration: 0.25), value: progress)
                                 }
                             }
-                            .frame(width: 140, height: 15)
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 10)
+                            .frame(width: 140, height: 16)
                     }
                 }
                 .padding(.top, -40)
@@ -159,7 +223,7 @@ struct MusicSheetView: View {
                             HStack(spacing: 80) {
                                 ForEach(notes) { note in
                                     ZStack {
-                                        NoteView(note: note, noteSize: noteSize)
+                                        EngravedNoteView(note: note, noteSize: noteSize)
 
                                         if note.isTarget {
                                             TargetIndicatorView(color: note.color, shakeTrigger: $shakeTrigger, isCorrect: isCorrect)

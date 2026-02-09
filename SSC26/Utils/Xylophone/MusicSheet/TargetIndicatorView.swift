@@ -10,7 +10,7 @@ struct TargetIndicatorView : View {
             .fill(color)
             .opacity(0.6)
             .cornerRadius(15)
-            .frame(width: 50, height: 80)
+            .frame(width: 50, height: 85)
             .modifier(ShakeEffect(animatableData: shakeTrigger))
             .onAppear {
                 if !isCorrect {
