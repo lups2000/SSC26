@@ -29,55 +29,54 @@ struct XylophoneTileView: View {
     }
 
     var body: some View {
-        Button(action: {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isPressed = true
-            }
-
-            // Trigger the action (play sound)
-            action?()
-
-            // Reset after short delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        Rectangle()
+            .fill(adaptiveColor)
+            .frame(height: height)
+            .cornerRadius(12)
+            .overlay(
+                VStack {
+                    Circle()
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
+                        .frame(width: 30, height: 30)
+                        .padding(.top, 20)
+                    Spacer()
+                    Text(note)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
+                    Spacer()
+                    Circle()
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
+                        .frame(width: 30, height: 30)
+                        .padding(.bottom, 20)
+                }
+            )
+            .padding(.horizontal, 16)
+            .scaleEffect(isPressed ? 0.97 : 1)
+            .offset(y: isPressed ? 3 : 0)
+            .shadow(
+                color: adaptiveColor.opacity(isPressed ? 0.15 : 0.35),
+                radius: isPressed ? 4 : 8,
+                x: 0,
+                y: isPressed ? 2 : 6
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.15)) {
-                    isPressed = false
+                    isPressed = true
+                }
+
+                // Trigger the action (play sound)
+                action?()
+
+                // Reset after short delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        isPressed = false
+                    }
                 }
             }
-        }) {
-            Rectangle()
-                .fill(adaptiveColor)
-                .frame(height: height)
-                .cornerRadius(12)
-                .overlay(
-                    VStack {
-                        Circle()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
-                            .frame(width: 30, height: 30)
-                            .padding(.top, 20)
-                        Spacer()
-                        Text(note)
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .shadow(radius: 2)
-                        Spacer()
-                        Circle()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
-                            .frame(width: 30, height: 30)
-                            .padding(.bottom, 20)
-                    }
-                )
-                .padding(.horizontal, 16)
-                .scaleEffect(isPressed ? 0.97 : 1)
-                .offset(y: isPressed ? 4 : 0)
-                .shadow(
-                    color: adaptiveColor.opacity(isPressed ? 0.15 : 0.35),
-                    radius: isPressed ? 4 : 8,
-                    x: 0,
-                    y: isPressed ? 2 : 6
-                )
-        }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 
