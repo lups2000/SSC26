@@ -11,10 +11,46 @@ struct HandTrackingControls: View {
             if manager.settings.isHandTrackingEnabled {
                 ForEach(manager.overlayPoints.indices, id: \.self) { i in
                     let point = manager.overlayPoints[i]
-                    Circle()
-                        .fill(i == 1 ? Color.red : Color.yellow) // red = index, yellow = thumb
-                        .frame(width: 16, height: 16)
-                        .position(x: point.x, y: point.y)
+                    ZStack {
+                        // Outer glow
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        (i == 1 ? Color.red : Color.yellow).opacity(0.4),
+                                        (i == 1 ? Color.red : Color.yellow).opacity(0)
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 20
+                                )
+                            )
+                            .frame(width: 40, height: 40)
+                        
+                        // Main dot
+                        Circle()
+                            .fill(i == 1 ? Color.red : Color.yellow) // red = index, yellow = thumb
+                            .frame(width: 24, height: 24)
+                        
+                        // White stroke for contrast
+                        Circle()
+                            .stroke(Color.white, lineWidth: 3)
+                            .frame(width: 24, height: 24)
+                        
+                        // Inner highlight
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.white.opacity(0.6), Color.white.opacity(0)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(width: 24, height: 24)
+                            .offset(y: -3)
+                    }
+                    .position(x: point.x, y: point.y)
+                    .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
                 }
             }
             
