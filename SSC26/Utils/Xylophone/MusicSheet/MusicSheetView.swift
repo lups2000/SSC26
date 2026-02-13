@@ -51,7 +51,7 @@ private struct EngravedNoteView: View {
             // Notehead
             Ellipse()
                 .fill(Color.white)
-                .frame(width: noteSize * 1.1, height: noteSize)
+                .frame(width: noteSize * 0.9, height: noteSize * 0.8)
                 .rotationEffect(.degrees(-20))
                 .overlay(
                     Ellipse()
@@ -68,7 +68,7 @@ private struct EngravedNoteView: View {
             Rectangle()
                 .fill(Color.white)
                 .frame(width: 2.5, height: stemLength)
-                .offset(x: stemUp ? noteSize * 0.55 : -noteSize * 0.55,
+                .offset(x: stemUp ? noteSize * 0.40 : -noteSize * 0.55,
                         y: stemUp ? -stemLength/2 : stemLength/2)
         }
     }
@@ -83,7 +83,7 @@ struct MusicSheetView: View {
     let onRestart: (() -> Void)
     let onClose: (() -> Void)
 
-    private let lineSpacing: CGFloat = 25
+    private let lineSpacing: CGFloat = 22
     private let noteSize: CGFloat = 25
 
     @State private var animateTarget = false
