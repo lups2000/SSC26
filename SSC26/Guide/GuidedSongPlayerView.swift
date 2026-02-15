@@ -16,6 +16,11 @@ struct GuidedSongPlayerView: View {
     }
 
     var body: some View {
+        // Adaptive tile heights based on screen size
+        let adaptiveTileHeights: [CGFloat] = UIScreen.main.bounds.height < 1000 
+            ? [470, 440, 410, 380, 340, 310, 280, 240]  // 11-inch iPad
+            : [580, 540, 500, 460, 420, 380, 340, 300]  // 13-inch iPad
+        
         GeometryReader { geo in
             ZStack {
                 // MARK: - Camera Feed (behind everything)
@@ -45,7 +50,7 @@ struct GuidedSongPlayerView: View {
                                value: engine.currentIndex)
                     
                     // MARK: - Xylophone with tile frame tracking
-                    XylophoneWithTracking(manager: handTrackingManager) { note in
+                    XylophoneWithTracking(manager: handTrackingManager, tileHeights: adaptiveTileHeights) { note in
                         engine.handleInput(note: note)
                     }
                 }

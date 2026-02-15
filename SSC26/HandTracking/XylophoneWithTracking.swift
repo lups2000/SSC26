@@ -5,10 +5,11 @@ import SwiftUI
 struct XylophoneWithTracking: View {
     let manager: HandTrackingManager
     let onPlayNote: (String) -> Void
+    var tileHeights: [CGFloat] = [580, 540, 500, 460, 420, 380, 340, 300]
     
     var body: some View {
         ZStack {
-            XylophoneView(onPlayNote: onPlayNote, pressedTileIndex: manager.pressedTileIndex)
+            XylophoneView(onPlayNote: onPlayNote, pressedTileIndex: manager.pressedTileIndex, tileHeights: tileHeights)
             
             // Invisible overlay that mirrors the exact HStack layout so we can
             // read each tile's on-screen CGRect. The spacing (10) and padding

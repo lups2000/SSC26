@@ -3,26 +3,26 @@ import SwiftUI
 struct XylophoneView: View {
     var onPlayNote: (String) -> Void
     var pressedTileIndex: Int? = nil
-    let tileHeights: [CGFloat] = [580, 540, 500, 460, 420, 380, 340, 300]
+    var tileHeights: [CGFloat] = [580, 540, 500, 460, 420, 380, 340, 300]
     
     var body: some View {
         // Xylophone with wood sticks
         ZStack {
-            // Top wood stick
+            // Top wood stick - positioned relative to the tallest tile
             Rectangle()
                 .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
                 .cornerRadius(12)
                 .frame(height: 50)
                 .frame(maxWidth: .infinity)
-                .offset(y: -tileHeights.first! / 2 + 100)
+                .offset(y: -tileHeights.first! / 2 + (tileHeights.first! * 0.17))
                 .rotationEffect(.degrees(7))
             
-            // Bottom wood stick
+            // Bottom wood stick - positioned relative to the shortest tile
             Rectangle()
                 .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
                 .frame(height: 50)
                 .frame(maxWidth: .infinity)
-                .offset(y: tileHeights.last! / 2 + 40)
+                .offset(y: tileHeights.last! / 2 + (tileHeights.last! * 0.13))
                 .rotationEffect(.degrees(-7))
             
             // Tiles
