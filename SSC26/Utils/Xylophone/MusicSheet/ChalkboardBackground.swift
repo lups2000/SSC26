@@ -462,6 +462,7 @@ struct ChalkboardTray: View {
                             .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
                             .rotationEffect(.degrees(-4))
                             .offset(y: -4)
+                            .opacity(0.9)
 
                         Capsule(style: .continuous)
                             .fill(Color.white.opacity(0.95))
@@ -473,6 +474,7 @@ struct ChalkboardTray: View {
                             .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
                             .rotationEffect(.degrees(4))
                             .offset(x: -50, y: -3)
+                            .opacity(0.9)
                         Capsule(style: .continuous)
                             .fill(Color.white.opacity(0.95))
                             .frame(width: 35, height: 8)
@@ -483,6 +485,7 @@ struct ChalkboardTray: View {
                             .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
                             .rotationEffect(.degrees(2))
                             .offset(x: 130, y: -3)
+                            .opacity(0.9)
                     }
 
                     // Eraser
