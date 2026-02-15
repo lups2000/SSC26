@@ -8,7 +8,7 @@ struct XylophoneWithTracking: View {
     
     var body: some View {
         ZStack {
-            XylophoneView(onPlayNote: onPlayNote)
+            XylophoneView(onPlayNote: onPlayNote, pressedTileIndex: manager.pressedTileIndex)
             
             // Invisible overlay that mirrors the exact HStack layout so we can
             // read each tile's on-screen CGRect. The spacing (10) and padding

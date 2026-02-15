@@ -4,6 +4,7 @@ struct XylophoneTileView: View {
     var note: String
     var color: Color
     var height: CGFloat
+    var isExternallyPressed: Bool = false
     var action: (() -> Void)? = nil
 
     @State private var isPressed = false
@@ -29,6 +30,8 @@ struct XylophoneTileView: View {
     }
 
     var body: some View {
+        let activePress = isPressed || isExternallyPressed // Combine both press states
+        
         Rectangle()
             .fill(adaptiveColor)
             .frame(height: height)
@@ -53,13 +56,13 @@ struct XylophoneTileView: View {
                 }
             )
             .padding(.horizontal, 16)
-            .scaleEffect(isPressed ? 0.97 : 1)
-            .offset(y: isPressed ? 3 : 0)
+            .scaleEffect(activePress ? 0.97 : 1)
+            .offset(y: activePress ? 3 : 0)
             .shadow(
-                color: adaptiveColor.opacity(isPressed ? 0.15 : 0.35),
-                radius: isPressed ? 4 : 8,
+                color: adaptiveColor.opacity(activePress ? 0.15 : 0.35),
+                radius: activePress ? 4 : 8,
                 x: 0,
-                y: isPressed ? 2 : 6
+                y: activePress ? 2 : 6
             )
             .contentShape(Rectangle())
             .onTapGesture {
@@ -77,6 +80,7 @@ struct XylophoneTileView: View {
                     }
                 }
             }
+            .animation(.easeInOut(duration: 0.15), value: isExternallyPressed) // Animate external presses
     }
 }
 

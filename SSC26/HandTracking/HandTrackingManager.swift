@@ -41,6 +41,10 @@ final class HandTrackingManager {
     /// Use this to hook into your game logic (e.g., engine.handleInput(note:))
     var onNoteTriggered: ((String) -> Void)?
     
+    /// Tracks which tile index should currently show a pressed animation.
+    /// Set to the tile index to trigger animation, or nil to clear all animations.
+    var pressedTileIndex: Int? = nil
+    
     // MARK: - Public Methods
     
     /// Call this from your CameraView's onUpdate closure.
@@ -56,6 +60,7 @@ final class HandTrackingManager {
         isTracking = false
         overlayPoints = []
         lastPinchNote = nil
+        pressedTileIndex = nil
     }
     
     /// Updates tile frames from preference key values.
@@ -73,6 +78,7 @@ final class HandTrackingManager {
         // Need both thumb (0) and index (1).
         guard points.count >= 2 else {
             lastPinchNote = nil   // fingers separated or lost — allow re-trigger
+            pressedTileIndex = nil // clear tile animation
             return
         }
         
@@ -82,6 +88,7 @@ final class HandTrackingManager {
         
         guard distance < Self.pinchThreshold else {
             lastPinchNote = nil   // fingers separated — reset so next pinch fires
+            pressedTileIndex = nil // clear tile animation
             return
         }
         
@@ -99,14 +106,26 @@ final class HandTrackingManager {
             guard note != lastPinchNote else { return }
             
             lastPinchNote = note
+            pressedTileIndex = i // trigger visual animation
             
             // Play the sound
             SoundPlayer.shared.play(note: note)
             
             // Notify callback (for game logic integration)
             onNoteTriggered?(note)
+            
+            // Clear the animation after a short delay
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(150))
+                if pressedTileIndex == i {
+                    pressedTileIndex = nil
+                }
+            }
             return
         }
+        
+        // If we're pinching but not on any tile, clear the animation
+        pressedTileIndex = nil
     }
 }
 
