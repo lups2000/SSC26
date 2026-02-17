@@ -143,7 +143,7 @@ struct HandTrackingControls: View {
                 
                 Spacer()
             }
-            .padding(.top, 50)
+            .padding(.top, 20)
             .padding(.trailing, 10)
         }
         .allowsHitTesting(true) // Ensure controls remain interactive

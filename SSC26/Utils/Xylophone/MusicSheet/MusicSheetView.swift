@@ -196,7 +196,7 @@ struct MusicSheetView: View {
                                         .background(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.white, lineWidth: 2))
                                         .foregroundStyle(Color.white)
                                 }
-                            }.padding(.top, 10)
+                            }.padding(.top, 15)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -224,11 +224,12 @@ struct MusicSheetView: View {
                                     .offset(y: noteOffset(note.pitch))
                                 }
                             }
+                            .padding(.horizontal, 10)
                         }
                     }
                 }
             }
-            .padding(.horizontal, 50)
+            .padding(.horizontal, 40)
         }
         .frame(width: 650, height: 300)
     }

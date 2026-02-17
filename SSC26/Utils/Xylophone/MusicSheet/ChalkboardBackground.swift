@@ -75,7 +75,7 @@ struct ChalkboardBackground: View {
                 VStack {
                     Spacer()
                     ChalkboardTray()
-                        .offset(y: 15)
+                        .offset(y: 18)
                 }
             )
             .background(
