@@ -360,8 +360,6 @@ struct GuideView: View {
         .background(colorScheme == .dark ? Color(white: 0.12).opacity(0.5) : Color.white.opacity(0.6))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
-    
-    // MARK: - Helper Functions
 
 }
 

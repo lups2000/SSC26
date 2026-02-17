@@ -224,7 +224,6 @@ struct MusicSheetView: View {
                                     .offset(y: noteOffset(note.pitch))
                                 }
                             }
-                            .padding(.horizontal, 10)
                         }
                     }
                 }

@@ -9,18 +9,47 @@ struct XylophoneView: View {
         // Xylophone with wood sticks
         ZStack {
             // Top wood stick - positioned relative to the tallest tile
-            Rectangle()
-                .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
-                .cornerRadius(12)
-                .frame(height: 50)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.85, green: 0.70, blue: 0.50),
+                            Color(red: 0.90, green: 0.75, blue: 0.55),
+                            Color(red: 0.85, green: 0.70, blue: 0.50)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.black.opacity(0.15), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 2)
+                .frame(height: 60)
                 .frame(maxWidth: .infinity)
                 .offset(y: -tileHeights.first! / 2 + (tileHeights.first! * 0.17))
                 .rotationEffect(.degrees(7))
             
             // Bottom wood stick - positioned relative to the shortest tile
-            Rectangle()
-                .fill(Color(red: 0.90, green: 0.75, blue: 0.55))
-                .frame(height: 50)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.85, green: 0.70, blue: 0.50),
+                            Color(red: 0.90, green: 0.75, blue: 0.55),
+                            Color(red: 0.85, green: 0.70, blue: 0.50)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.black.opacity(0.15), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 2)
+                .frame(height: 60)
                 .frame(maxWidth: .infinity)
                 .offset(y: tileHeights.last! / 2 + (tileHeights.last! * 0.13))
                 .rotationEffect(.degrees(-7))
