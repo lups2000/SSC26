@@ -124,41 +124,33 @@ struct MusicSheetView: View {
 
                     if let progress, progress >= 0, progress < 1 {
                             ZStack(alignment: .leading) {
+                                // Background track
                                 Capsule()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color.white.opacity(0.12), Color.white.opacity(0.08)],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
+                                    .fill(Color.white.opacity(0.15))
                                     .overlay(
                                         Capsule()
-                                            .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                                            .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
                                     )
-                                    .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+                                    .shadow(color: .black.opacity(0.2), radius: 1, x: 0, y: 1)
 
+                                // Progress fill
                                 GeometryReader { geo in
                                     let w = max(0, min(geo.size.width, geo.size.width * progress))
                                     Capsule()
                                         .fill(
                                             LinearGradient(
-                                                colors: [Color.white, Color.white.opacity(0.85)],
+                                                colors: [Color.white.opacity(0.95), Color.white.opacity(0.8)],
                                                 startPoint: .top,
                                                 endPoint: .bottom
                                             )
                                         )
                                         .frame(width: w)
-                                        .overlay(
-                                            Capsule()
-                                                .fill(Color.white.opacity(0.35))
-                                                .frame(width: w, height: 2)
-                                                .offset(y: -6)
-                                        )
-                                        .animation(.easeOut(duration: 0.25), value: progress)
+                                        .shadow(color: .white.opacity(0.4), radius: 3, x: 0, y: 0)
+                                        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: progress)
                                 }
+                                .padding(2)
                             }
-                            .frame(width: 140, height: 16)
+                            .frame(width: 140, height: 18)
                     }
                 }
                 .padding(.top, -40)
