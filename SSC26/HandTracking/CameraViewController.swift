@@ -79,22 +79,31 @@ final class CameraViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        do {
-            // Set up camera session on first appearance
-            if cameraFeedSession == nil {
-                try setupAVSession()
-                previewLayer.session = cameraFeedSession
-                previewLayer.videoGravity = .resizeAspectFill
-                if let connection = previewLayer.connection {
-                    updateVideoRotationAngle(on: connection)
+        
+        // Perform all camera setup asynchronously to avoid blocking the UI
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            do {
+                // Set up camera session on first appearance
+                if self.cameraFeedSession == nil {
+                    try self.setupAVSession()
+                    
+                    // Update UI elements on main thread
+                    DispatchQueue.main.async {
+                        self.previewLayer.session = self.cameraFeedSession
+                        self.previewLayer.videoGravity = .resizeAspectFill
+                        if let connection = self.previewLayer.connection {
+                            self.updateVideoRotationAngle(on: connection)
+                        }
+                    }
                 }
-            }
-            // Start camera feed on background thread
-            DispatchQueue.global(qos: .userInteractive).async {
+                
+                // Start camera feed (already on background thread)
                 self.cameraFeedSession?.startRunning()
+            } catch {
+                print(error.localizedDescription)
             }
-        } catch {
-            print(error.localizedDescription)
         }
     }
     

@@ -9,6 +9,11 @@ struct GuidedSongPlayerView: View {
     
     /// Manages all hand tracking state and pinch detection logic
     @State private var handTrackingManager = HandTrackingManager()
+    
+    // MARK: - Performance Optimization
+    
+    /// Delays camera initialization until the view is fully presented
+    @State private var shouldInitializeCamera = false
 
     init(song: GuidedSong, onBack: @escaping () -> Void) {
         _engine = State(wrappedValue: GuidedSongEngine(song: song))
@@ -16,15 +21,15 @@ struct GuidedSongPlayerView: View {
     }
 
     var body: some View {
-        // Adaptive tile heights based on screen size
+        // Adaptive tile heights based on screen size (computed once)
         let adaptiveTileHeights: [CGFloat] = UIScreen.main.bounds.height < 1000 
             ? [470, 440, 410, 380, 340, 310, 280, 240]  // 11-inch iPad
             : [580, 540, 500, 460, 420, 380, 340, 300]  // 13-inch iPad
         
         GeometryReader { geo in
             ZStack {
-                // MARK: - Camera Feed (behind everything)
-                if handTrackingManager.settings.isHandTrackingEnabled {
+                // MARK: - Camera Feed (behind everything) - LAZY LOADED
+                if handTrackingManager.settings.isHandTrackingEnabled && shouldInitializeCamera {
                     CameraView { points in
                         handTrackingManager.handleCameraUpdate(points)
                     }
@@ -72,11 +77,16 @@ struct GuidedSongPlayerView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("")
-        .onAppear {
+        .task {
             // Hook up the hand tracking manager to the game engine
             handTrackingManager.onNoteTriggered = { note in
                 engine.handleInput(note: note)
             }
+            
+            // Delay camera initialization to allow view to render first
+            // This dramatically improves perceived performance
+            try? await Task.sleep(for: .milliseconds(300))
+            shouldInitializeCamera = true
         }
     }
     

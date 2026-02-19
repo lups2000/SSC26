@@ -74,10 +74,7 @@ struct GuidedSongsView: View {
                         columnVisibility = .all
                     }
                 }
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing).combined(with: .opacity),
-                    removal: .move(edge: .trailing).combined(with: .opacity)
-                ))
+                .transition(.opacity) // Simplified transition for better performance
                 .onAppear {
                     columnVisibility = .detailOnly
                 }
