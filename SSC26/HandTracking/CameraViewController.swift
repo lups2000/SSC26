@@ -208,21 +208,16 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     /// Called for each video frame captured by the camera.
     /// Performs hand pose detection and extracts thumb and index finger positions.
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        var fingerTips: [CGPoint] = []
-        
-        // Ensure points are processed on the main thread after detection
-        defer {
-            DispatchQueue.main.sync {
-                self.processPoints(fingerTips)
-            }
-        }
-        
         // Create Vision request handler from the camera frame
         let handHandler = VNImageRequestHandler(cmSampleBuffer: sampleBuffer, orientation: .up)
         do {
             // Perform hand pose detection
             try handHandler.perform([handPoseRequest])
-            guard let results = handPoseRequest.results?.prefix(1), !results.isEmpty  else {
+            guard let results = handPoseRequest.results?.prefix(1), !results.isEmpty else {
+                // No hand detected - update on main thread asynchronously
+                DispatchQueue.main.async { [weak self] in
+                    self?.processPoints([])
+                }
                 return
             }
             
@@ -235,11 +230,16 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             }
             
             // Filter by confidence and convert to CGPoint with flipped Y coordinate
-            fingerTips = recognizedPoints.filter {
+            let fingerTips = recognizedPoints.filter {
                 $0.confidence > trackingConfidence
             }
             .map {
                 CGPoint(x: $0.location.x, y: 1 - $0.location.y)
+            }
+            
+            // Update UI on main thread asynchronously (non-blocking)
+            DispatchQueue.main.async { [weak self] in
+                self?.processPoints(fingerTips)
             }
         } catch {
             print("Error tracking hand: \(error.localizedDescription)")

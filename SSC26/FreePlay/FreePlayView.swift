@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct FreePlayView: View {
+    @Binding var columnVisibility: NavigationSplitViewVisibility
+    
     /// Manages all hand tracking state and pinch detection logic
     @State private var handTrackingManager = HandTrackingManager()
 
@@ -30,9 +32,15 @@ struct FreePlayView: View {
         .ignoresSafeArea()
         .navigationTitle("Play XyloFingers")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            columnVisibility = .detailOnly
+        }
+        .onDisappear {
+            columnVisibility = .all
+        }
     }
 }
 
 #Preview {
-    FreePlayView()
+    FreePlayView(columnVisibility: .constant(.all))
 }

@@ -19,7 +19,7 @@ struct ContentView: View {
                 }
 
                 NavigationLink {
-                    FreePlayView()
+                    FreePlayView(columnVisibility: $columnVisibility)
                 } label: {
                     Label("Play XyloFingers", systemImage: "hand.point.up.fill")
                 }
