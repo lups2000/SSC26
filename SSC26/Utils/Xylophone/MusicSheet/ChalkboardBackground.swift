@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ChalkboardBackground: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
+        RoundedRectangle(cornerRadius: 24, style: .continuous)
             .fill(
                 LinearGradient(
                     colors: [
@@ -26,25 +26,25 @@ struct ChalkboardBackground: View {
                         .fill(Color.white.opacity(0.5))
                         .blendMode(.overlay)
                     
-                    // Chalk dust on all edges
+                    // Chalk dust on all edges (with rounded corners)
                     // Bottom edge
                     VStack {
                         Spacer()
                         ChalkDustBottomEdge()
-                            .frame(height: 7)
+                            .frame(height: 8)
                     }
                     
                     // Top edge
                     VStack {
                         ChalkDustTopEdge()
-                            .frame(height: 7)
+                            .frame(height: 5)
                         Spacer()
                     }
                     
                     // Left edge
                     HStack {
                         ChalkDustLeftEdge()
-                            .frame(width: 7)
+                            .frame(width: 5)
                         Spacer()
                     }
                     
@@ -52,21 +52,21 @@ struct ChalkboardBackground: View {
                     HStack {
                         Spacer()
                         ChalkDustRightEdge()
-                            .frame(width: 7)
+                            .frame(width: 5)
                     }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             )
             .overlay(
                 // Inner border slightly lighter (wear)
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .strokeBorder(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.05), Color.white.opacity(0.02)],
+                            colors: [Color.white.opacity(0.12), Color.white.opacity(0.08)],
                             startPoint: .top,
                             endPoint: .bottom
                         ),
-                        lineWidth: 1
+                        lineWidth: 2
                     )
             )
             .padding(20)
