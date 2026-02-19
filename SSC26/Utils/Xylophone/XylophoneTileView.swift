@@ -29,6 +29,13 @@ struct XylophoneTileView: View {
                     saturation: Double(saturation * 0.95),
                     brightness: Double(brightness * 0.8))
     }
+    
+    /// Scale the vibration effect based on tile height - shorter tiles get more pronounced effects
+    private var vibrationScale: CGFloat {
+        // Normalize height: smaller tiles (300) get 1.08, taller tiles (580) get 1.05
+        let normalized = (height - 300) / (580 - 300) // 0.0 for shortest, 1.0 for tallest
+        return 1.08 - (normalized * 0.03) // 1.08 for shortest, 1.05 for tallest
+    }
 
     var body: some View {
         let activePress = isPressed || isExternallyPressed // Combine both press states
