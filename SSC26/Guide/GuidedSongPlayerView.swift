@@ -40,18 +40,41 @@ struct GuidedSongPlayerView: View {
                 
                 // MARK: - Main Content
                 VStack(spacing: 16) {
-                    MusicSheetView(
-                        notes: sheetNotes(),
-                        title: engine.song.title,
-                        isCorrect: engine.lastInputWasCorrect ?? true,
-                        progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count)),
-                        onRestart: {
-                            engine.reset()
-                        },
-                        onClose: onBack
-                    )
-                    .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                               value: engine.currentIndex)
+                    // Chalkboard and control panel side by side
+                    HStack(alignment: .center, spacing: 20) {
+                        MusicSheetView(
+                            notes: sheetNotes(),
+                            title: engine.song.title,
+                            isCorrect: engine.lastInputWasCorrect ?? true,
+                            progress: Double(engine.currentIndex) / Double(max(1, engine.song.notes.count)),
+                            onRestart: {
+                                engine.reset()
+                            },
+                            onClose: onBack
+                        )
+                        .animation(.spring(response: 0.35, dampingFraction: 0.8),
+                                   value: engine.currentIndex)
+                        
+                        // Hand tracking control panel next to chalkboard
+                        HandTrackingControlPanel(
+                            isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
+                            isTracking: handTrackingManager.isTracking,
+                            onToggle: {
+                                handTrackingManager.settings.isHandTrackingEnabled.toggle()
+                                if !handTrackingManager.settings.isHandTrackingEnabled {
+                                    handTrackingManager.resetTracking()
+                                    shouldInitializeCamera = false
+                                } else {
+                                    // Delay camera initialization to prevent UI freeze
+                                    Task {
+                                        try? await Task.sleep(for: .milliseconds(100))
+                                        shouldInitializeCamera = true
+                                    }
+                                }
+                            }
+                        )
+                    
+                    }
                     
                     // MARK: - Xylophone with tile frame tracking
                     XylophoneWithTracking(manager: handTrackingManager, tileHeights: adaptiveTileHeights) { note in
@@ -60,8 +83,8 @@ struct GuidedSongPlayerView: View {
                 }
                 .padding()
                 
-                // MARK: - Hand tracking controls (on top of everything)
-                HandTrackingControls(manager: handTrackingManager)
+                // MARK: - Hand tracking visual overlays (finger dots only)
+                HandTrackingVisualsOnly(manager: handTrackingManager)
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
