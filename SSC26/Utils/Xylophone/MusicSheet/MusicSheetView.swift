@@ -106,9 +106,34 @@ struct MusicSheetView: View {
 
     var body: some View {
         ZStack {
-            ChalkboardBackground()
-
-            VStack(alignment: .leading, spacing: 12) {
+            // MARK: - Wall mounting shadow (behind the board)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.black.opacity(0.2))
+                .blur(radius: 12)
+                .offset(x: 4, y: 8)
+            
+            // MARK: - Chalkboard with frame
+            ZStack {
+                // Chalkboard surface
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.15, green: 0.18, blue: 0.15),
+                                Color(red: 0.12, green: 0.15, blue: 0.12)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                // Subtle chalk dust texture
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.white.opacity(0.02))
+                    .blendMode(.overlay)
+                
+                // Content
+                VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     if let title, !title.isEmpty {
                         Text(title)
@@ -228,13 +253,189 @@ struct MusicSheetView: View {
                     }
                 }
             }
-            .padding(.horizontal, 40)
+            .padding(.horizontal, 30)
+            .padding(.vertical, 10)
+            }
+            .overlay {
+                // MARK: - Wooden frame
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.4, green: 0.3, blue: 0.2),
+                                Color(red: 0.35, green: 0.25, blue: 0.15)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 16
+                    )
+                    .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+            }
+            
+            // MARK: - Chalk tray at bottom
+            ChalkTrayView()
+                .offset(y: 145)
         }
-        .frame(width: 650, height: 300)
+        .frame(width: 650, height: 280)
     }
 
     private func noteOffset(_ pitch: CGFloat) -> CGFloat {
         CGFloat(pitch) * (lineSpacing / 2)
+    }
+}
+
+
+// MARK: - Mounting Screw
+
+private struct MountingScrewView: View {
+    var body: some View {
+        ZStack {
+            // Screw head shadow
+            Circle()
+                .fill(Color.black.opacity(0.3))
+                .frame(width: 14, height: 14)
+                .blur(radius: 2)
+                .offset(x: 1, y: 1)
+            
+            // Screw head
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.7, green: 0.7, blue: 0.72),
+                            Color(red: 0.5, green: 0.5, blue: 0.52)
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 8
+                    )
+                )
+                .frame(width: 12, height: 12)
+            
+            // Phillips head slot
+            ZStack {
+                Rectangle()
+                    .fill(Color.black.opacity(0.6))
+                    .frame(width: 6, height: 1.5)
+                
+                Rectangle()
+                    .fill(Color.black.opacity(0.6))
+                    .frame(width: 1.5, height: 6)
+            }
+        }
+    }
+}
+
+// MARK: - Chalk Tray
+
+private struct ChalkTrayView: View {
+    var body: some View {
+        ZStack {
+            // Shadow
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .fill(Color.black.opacity(0.25))
+                .frame(width: 580, height: 24)
+                .blur(radius: 4)
+                .offset(y: 4)
+            
+            // Tray body
+            ZStack {
+                // Main tray
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.45, green: 0.35, blue: 0.25),
+                                Color(red: 0.38, green: 0.28, blue: 0.18)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 580, height: 20)
+                
+                // Lip/edge highlight
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(Color(red: 0.5, green: 0.4, blue: 0.3))
+                    .frame(width: 580, height: 3)
+                    .offset(y: -8.5)
+                
+                // Chalk pieces in the tray
+                HStack(spacing: 20) {
+                    ChalkPieceView(color: .white, length: 30)
+                    ChalkPieceView(color: .yellow, length: 25)
+                    ChalkPieceView(color: .pink, length: 35)
+                    ChalkPieceView(color: .cyan, length: 28)
+                }
+                .offset(x: -180, y: -2)
+                
+                // Eraser
+                EraserView()
+                    .offset(x: 230, y: -6)
+            }
+        }
+    }
+}
+
+// MARK: - Chalk Piece
+
+private struct ChalkPieceView: View {
+    let color: Color
+    let length: CGFloat
+    
+    var body: some View {
+        Capsule()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        color,
+                        color.opacity(0.8)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: length, height: 8)
+            .rotationEffect(.degrees(-3))
+            .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+    }
+}
+
+// MARK: - Eraser
+
+private struct EraserView: View {
+    var body: some View {
+        ZStack {
+            // Eraser body
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.95, green: 0.85, blue: 0.70),
+                            Color(red: 0.88, green: 0.78, blue: 0.63)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 65, height: 20)
+            
+            // Felt pad (bottom) - darker brown
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(Color(red: 0.45, green: 0.35, blue: 0.25))
+                .frame(width: 65, height: 6)
+                .offset(y: 7)
+            
+            // Chalk residue on felt
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(Color.white.opacity(0.6))
+                .frame(width: 65, height: 6)
+                .offset(y: 7)
+                .blendMode(.overlay)
+        }
+        .rotationEffect(.degrees(1))
+        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
     }
 }
 

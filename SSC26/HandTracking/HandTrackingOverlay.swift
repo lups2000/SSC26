@@ -64,96 +64,129 @@ struct HandTrackingControls: View {
                 HStack {
                     Spacer()
                     
-                    VStack(spacing: 12) {
-                        // Hand tracking toggle button
-                        Button(action: {
+                    // Hand tracking device button
+                    HandTrackingDeviceButton(
+                        isEnabled: manager.settings.isHandTrackingEnabled,
+                        isTracking: manager.isTracking,
+                        onToggle: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 manager.settings.isHandTrackingEnabled.toggle()
                                 if !manager.settings.isHandTrackingEnabled {
                                     manager.resetTracking()
                                 }
                             }
-                        }) {
-                            HStack(spacing: 10) {
-                                // Icon
-                                ZStack {
-                                    Circle()
-                                        .fill(manager.settings.isHandTrackingEnabled ?
-                                            LinearGradient(colors: [.blue.opacity(0.3), .blue.opacity(0.2)], startPoint: .top, endPoint: .bottom) :
-                                            LinearGradient(colors: [.orange.opacity(0.3), .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
-                                        )
-                                        .frame(width: 40, height: 40)
-                                    
-                                    Image(systemName: manager.settings.isHandTrackingEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
-                                        .font(.system(size: 18, weight: .semibold))
-                                        .foregroundStyle(manager.settings.isHandTrackingEnabled ? .blue : .orange)
-                                }
-                                
-                                // Label
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(manager.settings.isHandTrackingEnabled ? "Hand Tracking" : "Touch Mode")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
-                                    
-                                    Text(manager.settings.isHandTrackingEnabled ? "Tap to disable" : "Tap to enable")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .background {
-                                Capsule()
-                                    .fill(.ultraThinMaterial)
-                                    .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 4)
-                            }
-                            .overlay {
-                                Capsule()
-                                    .strokeBorder(.white.opacity(0.3), lineWidth: 1)
-                            }
                         }
-                        .buttonStyle(.plain)
-                        
-                        // Tracking status badge (only show when hand tracking is enabled)
-                        if manager.settings.isHandTrackingEnabled {
-                            HStack(spacing: 6) {
-                                ZStack {
-                                    Circle()
-                                        .fill(manager.isTracking ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
-                                        .frame(width: 18, height: 18)
-                                    
-                                    Circle()
-                                        .fill(manager.isTracking ? Color.green : Color.red)
-                                        .frame(width: 9, height: 9)
-                                        .shadow(color: manager.isTracking ? .green : .red, radius: 4)
-                                }
-                                
-                                Text(manager.isTracking ? "Active" : "Inactive")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background {
-                                Capsule()
-                                    .fill(.ultraThinMaterial)
-                                    .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 3)
-                            }
-                            .overlay {
-                                Capsule()
-                                    .strokeBorder((manager.isTracking ? Color.green : Color.red).opacity(0.3), lineWidth: 1.5)
-                            }
-                            .transition(.scale.combined(with: .opacity))
-                        }
-                    }
+                    )
                 }
                 
                 Spacer()
             }
-            .padding(.top, 60)  // Extra padding to clear status bar
+            .padding(.top, 60)
             .padding(.trailing, 20)
         }
         .allowsHitTesting(true) // Ensure controls remain interactive
+    }
+}
+
+// MARK: - Hand Tracking Device Button
+
+private struct HandTrackingDeviceButton: View {
+    let isEnabled: Bool
+    let isTracking: Bool
+    let onToggle: () -> Void
+    
+    @State private var pulseAnimation = false
+    
+    var body: some View {
+        Button(action: onToggle) {
+            VStack(spacing: 8) {
+                // Device housing (looks like a camera/sensor)
+                ZStack {
+                    // Shadow/mount
+                    Capsule()
+                        .fill(Color.black.opacity(0.3))
+                        .frame(width: 80, height: 12)
+                        .offset(y: 38)
+                        .blur(radius: 4)
+                    
+                    // Main device body
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 0.2, green: 0.2, blue: 0.22),
+                                        Color(red: 0.15, green: 0.15, blue: 0.17)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                        
+                        // Lens
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        Color.black,
+                                        Color(red: 0.1, green: 0.1, blue: 0.15)
+                                    ],
+                                    center: .center,
+                                    startRadius: 5,
+                                    endRadius: 20
+                                )
+                            )
+                            .frame(width: 40, height: 40)
+                            .overlay {
+                                Circle()
+                                    .stroke(Color.white.opacity(0.1), lineWidth: 2)
+                            }
+                        
+                        // Status indicator LED
+                        Circle()
+                            .fill(statusColor)
+                            .frame(width: 8, height: 8)
+                            .shadow(color: statusColor, radius: pulseAnimation ? 8 : 4)
+                            .offset(x: 25, y: -20)
+                            .opacity(isEnabled ? 1 : 0.3)
+                        
+                        // Hand icon indicator
+                        Image(systemName: isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(isEnabled ? .white : .gray)
+                            .offset(x: -25, y: -20)
+                    }
+                    .frame(width: 70, height: 60)
+                    .shadow(color: .black.opacity(0.4), radius: 6, x: 2, y: 3)
+                }
+                
+                // Label
+                Text(isEnabled ? "Hand Tracking" : "Touch Mode")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color(red: 0.3, green: 0.3, blue: 0.35))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background {
+                        Capsule()
+                            .fill(Color.white.opacity(0.7))
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    }
+            }
+        }
+        .buttonStyle(.plain)
+        .onAppear {
+            withAnimation(
+                .easeInOut(duration: 1.5)
+                .repeatForever(autoreverses: true)
+            ) {
+                pulseAnimation = true
+            }
+        }
+    }
+    
+    private var statusColor: Color {
+        if !isEnabled { return .gray }
+        return isTracking ? .green : .orange
     }
 }
 

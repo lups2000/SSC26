@@ -50,7 +50,6 @@ struct GuidedSongPlayerView: View {
                         },
                         onClose: onBack
                     )
-                    .frame(width: 650)
                     .animation(.spring(response: 0.35, dampingFraction: 0.8),
                                value: engine.currentIndex)
                     
