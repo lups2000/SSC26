@@ -88,17 +88,19 @@ private extension SongCardView {
         HStack(spacing: 8) {
             Image(systemName: "music.note")
                 .font(.caption)
+                .fontWeight(.bold)
                 .foregroundStyle(.secondary)
             
             Text("\(song.notes.count) notes")
                 .font(.caption)
+                .fontWeight(.bold)
                 .foregroundStyle(.secondary)
             
             Spacer()
             
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .fontWeight(.semibold)
+                .fontWeight(.bold)
                 .foregroundStyle(.tertiary)
         }
     }
