@@ -67,7 +67,7 @@ struct GuidedSongPlayerView: View {
                                 } else {
                                     // Delay camera initialization to prevent UI freeze
                                     Task {
-                                        try? await Task.sleep(for: .milliseconds(100))
+                                        try? await Task.sleep(for: .milliseconds(300))
                                         shouldInitializeCamera = true
                                     }
                                 }
@@ -107,7 +107,7 @@ struct GuidedSongPlayerView: View {
             
             // Delay camera initialization to allow view to render first
             // This dramatically improves perceived performance
-            try? await Task.sleep(for: .milliseconds(300))
+            try? await Task.sleep(for: .milliseconds(500))
             shouldInitializeCamera = true
         }
     }
