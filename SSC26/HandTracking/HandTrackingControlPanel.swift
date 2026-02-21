@@ -9,8 +9,6 @@ struct HandTrackingControlPanel: View {
     let isTracking: Bool
     let onToggle: () -> Void
     
-    @State private var pulseAnimation = false
-    
     var body: some View {
         VStack(spacing: 0) {
             // MARK: - Control panel plate
@@ -74,7 +72,7 @@ struct HandTrackingControlPanel: View {
                                 .stroke(statusColor, lineWidth: 2)
                                 .frame(width: 44, height: 44)
                                 .opacity(isEnabled ? 1 : 0.3)
-                                .shadow(color: statusColor, radius: pulseAnimation && isEnabled ? 6 : 2)
+                                .shadow(color: statusColor, radius: isEnabled ? 6 : 2)
                             
                             // Icon
                             Image(systemName: isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
@@ -98,14 +96,6 @@ struct HandTrackingControlPanel: View {
                 .padding(12)
             }
             .frame(width: 120, height: 110)
-        }
-        .onAppear {
-            withAnimation(
-                .easeInOut(duration: 1.5)
-                .repeatForever(autoreverses: true)
-            ) {
-                pulseAnimation = true
-            }
         }
     }
     

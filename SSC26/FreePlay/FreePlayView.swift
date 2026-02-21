@@ -60,20 +60,20 @@ struct FreePlayView: View {
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
+                    
         }
         .ignoresSafeArea()
         .navigationTitle("Play XyloFingers")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            columnVisibility = .detailOnly
-        }
         .onDisappear {
             columnVisibility = .all
         }
         .task {
+            columnVisibility = .detailOnly
+            
             // Delay camera initialization to allow view to render first
             // This dramatically improves perceived performance
-            try? await Task.sleep(for: .milliseconds(500))
+            try? await Task.sleep(for: .milliseconds(1000))
             if handTrackingManager.settings.isHandTrackingEnabled {
                 shouldInitializeCamera = true
             }

@@ -2,6 +2,7 @@ import SwiftUI
 import Combine
 
 struct GuidedSongPlayerView: View {
+    @Binding var columnVisibility: NavigationSplitViewVisibility
     @State private var engine: GuidedSongEngine
     let onBack: () -> Void
     
@@ -15,8 +16,9 @@ struct GuidedSongPlayerView: View {
     /// Delays camera initialization until the view is fully presented
     @State private var shouldInitializeCamera = false
 
-    init(song: GuidedSong, onBack: @escaping () -> Void) {
+    init(song: GuidedSong, columnVisibility: Binding<NavigationSplitViewVisibility>, onBack: @escaping () -> Void) {
         _engine = State(wrappedValue: GuidedSongEngine(song: song))
+        _columnVisibility = columnVisibility
         self.onBack = onBack
     }
 
@@ -105,6 +107,8 @@ struct GuidedSongPlayerView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("")
         .task {
+            columnVisibility = .detailOnly
+            
             // Hook up the hand tracking manager to the game engine
             handTrackingManager.onNoteTriggered = { note in
                 engine.handleInput(note: note)
@@ -112,8 +116,11 @@ struct GuidedSongPlayerView: View {
             
             // Delay camera initialization to allow view to render first
             // This dramatically improves perceived performance
-            try? await Task.sleep(for: .milliseconds(500))
-            shouldInitializeCamera = true
+            try? await Task.sleep(for: .milliseconds(1000))
+            
+            if handTrackingManager.settings.isHandTrackingEnabled {
+                shouldInitializeCamera = true
+            }
         }
     }
     
@@ -171,15 +178,21 @@ struct GuidedSongPlayerView: View {
 }
 
 #Preview {
+    @Previewable @State var visibility: NavigationSplitViewVisibility = .detailOnly
+    
     NavigationStack {
-        GuidedSongPlayerView(song: GuidedSong(
-            title: "Twinkle Twinkle Little Star",
-            description: "Time to shine! This lullaby helps you jump across the colors like a star.",
-            notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
-            difficulty: 2
-        ), onBack: {
-            print("Back tapped")
-        })
+        GuidedSongPlayerView(
+            song: GuidedSong(
+                title: "Twinkle Twinkle Little Star",
+                description: "Time to shine! This lullaby helps you jump across the colors like a star.",
+                notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
+                difficulty: 2
+            ),
+            columnVisibility: $visibility,
+            onBack: {
+                print("Back tapped")
+            }
+        )
     }
 }
 

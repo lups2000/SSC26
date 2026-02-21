@@ -9,8 +9,8 @@ struct GuidedSong: Identifiable, Equatable {
 }
 
 struct GuidedSongsView: View {
-    @Binding var columnVisibility: NavigationSplitViewVisibility
     @Environment(\.colorScheme) private var colorScheme
+    @Binding var columnVisibility: NavigationSplitViewVisibility
 
     let guidedSongs: [GuidedSong] = [
         // --- LEVEL 1 ---
@@ -68,16 +68,12 @@ struct GuidedSongsView: View {
             BackgroundGradient()
 
             if let song = selectedSong {
-                GuidedSongPlayerView(song: song) {
+                GuidedSongPlayerView(song: song, columnVisibility: $columnVisibility) {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                         selectedSong = nil
-                        columnVisibility = .all
                     }
                 }
                 .transition(.opacity) // Simplified transition for better performance
-                .onAppear {
-                    columnVisibility = .detailOnly
-                }
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
@@ -95,9 +91,6 @@ struct GuidedSongsView: View {
                     insertion: .move(edge: .leading).combined(with: .opacity),
                     removal: .move(edge: .leading).combined(with: .opacity)
                 ))
-                .onAppear {
-                    columnVisibility = .all
-                }
             }
         }
         .navigationTitle("Practice")
@@ -202,7 +195,6 @@ struct GuidedSongsView: View {
                         SongCardView(song: song) {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                                 selectedSong = song
-                                columnVisibility = .detailOnly
                             }
                         }
                         .transition(.scale(scale: 0.95).combined(with: .opacity))
@@ -265,5 +257,6 @@ struct GuidedSongsView: View {
 }
 
 #Preview {
-    GuidedSongsView(columnVisibility: .constant(.all))
+    @Previewable @State var visibility: NavigationSplitViewVisibility = .all
+    GuidedSongsView(columnVisibility: $visibility)
 }
