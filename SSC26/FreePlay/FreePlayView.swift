@@ -25,7 +25,7 @@ struct FreePlayView: View {
                 BackgroundGradient()
 
                 // MARK: - Xylophone with tile frame tracking
-                XylophoneWithTracking(manager: handTrackingManager) { _ in }
+                XylophoneWithTracking(manager: handTrackingManager) { _ in }.padding(.horizontal, 20)
                 
                 // MARK: - Hand tracking visual overlays (wand + thumb dot)
                 HandTrackingVisualsOnly(manager: handTrackingManager)

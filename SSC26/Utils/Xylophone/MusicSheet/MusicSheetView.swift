@@ -419,18 +419,18 @@ private struct EraserView: View {
                         endPoint: .bottom
                     )
                 )
-                .frame(width: 65, height: 20)
+                .frame(width: 55, height: 20)
             
             // Felt pad (bottom) - darker brown
             RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(Color(red: 0.45, green: 0.35, blue: 0.25))
-                .frame(width: 65, height: 6)
+                .frame(width: 55, height: 6)
                 .offset(y: 7)
             
             // Chalk residue on felt
             RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(Color.white.opacity(0.6))
-                .frame(width: 65, height: 6)
+                .frame(width: 55, height: 6)
                 .offset(y: 7)
                 .blendMode(.overlay)
         }

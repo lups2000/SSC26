@@ -22,7 +22,8 @@ struct GuidedSongPlayerView: View {
 
     var body: some View {
         // Adaptive tile heights based on screen size (computed once)
-        let adaptiveTileHeights: [CGFloat] = UIScreen.main.bounds.height < 1000 
+        let isSmallScreen = UIScreen.main.bounds.height < 1000
+        let adaptiveTileHeights: [CGFloat] = isSmallScreen
             ? [470, 440, 410, 380, 340, 310, 280, 240]  // 11-inch iPad
             : [580, 540, 500, 460, 420, 380, 340, 300]  // 13-inch iPad
         
@@ -39,7 +40,7 @@ struct GuidedSongPlayerView: View {
                 BackgroundGradient()
                 
                 // MARK: - Main Content
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     // Chalkboard and control panel side by side
                     HStack(alignment: .center, spacing: 20) {
                         MusicSheetView(
@@ -52,8 +53,6 @@ struct GuidedSongPlayerView: View {
                             },
                             onClose: onBack
                         )
-                        .animation(.spring(response: 0.35, dampingFraction: 0.8),
-                                   value: engine.currentIndex)
                         
                         // Hand tracking control panel next to chalkboard
                         HandTrackingControlPanel(
@@ -77,9 +76,16 @@ struct GuidedSongPlayerView: View {
                     }
                     
                     // MARK: - Xylophone with tile frame tracking
-                    XylophoneWithTracking(manager: handTrackingManager, tileHeights: adaptiveTileHeights) { note in
-                        engine.handleInput(note: note)
-                    }
+                    XylophoneWithTracking(
+                        manager: handTrackingManager,
+                        onPlayNote: { note in
+                            engine.handleInput(note: note)
+                        },
+                        tileHeights: adaptiveTileHeights,
+                        isSmallScreen: isSmallScreen
+                    )
+                    .padding(.top, 18)
+                    .padding(.horizontal, 20)
                 }
                 .padding()
                 
@@ -89,7 +95,6 @@ struct GuidedSongPlayerView: View {
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .ignoresSafeArea()
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: engine.currentIndex)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button(action: onBack) {

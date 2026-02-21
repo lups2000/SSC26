@@ -97,7 +97,7 @@ struct HandTrackingControlPanel: View {
                 }
                 .padding(12)
             }
-            .frame(width: 90, height: 110)
+            .frame(width: 120, height: 110)
         }
         .onAppear {
             withAnimation(
@@ -188,22 +188,11 @@ struct HandTrackingVisualsOnly: View {
 // MARK: - Preview
 
 #Preview("Control Panel") {
-    ZStack {
-        Color.gray.opacity(0.2)
-        HandTrackingControlPanel(
-            isEnabled: true,
-            isTracking: true,
-            onToggle: {
-                print("Toggle tapped")
-            }
-        )
-    }
-}
-
-#Preview("Visuals Only") {
-    ZStack {
-        Color.blue.opacity(0.3)
-        HandTrackingVisualsOnly(manager: HandTrackingManager())
-    }
-    .ignoresSafeArea()
+    HandTrackingControlPanel(
+        isEnabled: true,
+        isTracking: true,
+        onToggle: {
+            print("Toggle tapped")
+        }
+    )
 }

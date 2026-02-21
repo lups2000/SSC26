@@ -4,8 +4,26 @@ struct XylophoneView: View {
     var onPlayNote: (String) -> Void
     var pressedTileIndex: Int? = nil
     var tileHeights: [CGFloat] = [580, 540, 500, 460, 420, 380, 340, 300]
+    var isSmallScreen: Bool = false // Flag for 11-inch iPad vs 13-inch
     
     var body: some View {
+        // Pre-compute all positioning values to avoid complex expressions
+        let topStickX: CGFloat = isSmallScreen ? -10 : -20
+        let bottomStickX: CGFloat = isSmallScreen ? -10 : -20
+        let topStickRotation: Double = isSmallScreen ? 6.2 : 7.4
+        let bottomStickRotation: Double = isSmallScreen ? -6.2 : -7.4
+        
+        let firstHeight = tileHeights.first!
+        let lastHeight = tileHeights.last!
+        
+        let topStickY: CGFloat = isSmallScreen 
+            ? -firstHeight / 2 + (firstHeight * 0.180)
+            : -firstHeight / 2 + (firstHeight * 0.175)
+        
+        let bottomStickY: CGFloat = isSmallScreen 
+            ? lastHeight / 2 + (lastHeight * 0.13)
+            : lastHeight / 2 + (lastHeight * 0.13)
+        
         // Xylophone with wood sticks
         ZStack {
             // Top wood stick - positioned relative to the tallest tile
@@ -28,8 +46,8 @@ struct XylophoneView: View {
                 .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 2)
                 .frame(height: 60)
                 .frame(maxWidth: .infinity)
-                .offset(y: -tileHeights.first! / 2 + (tileHeights.first! * 0.17))
-                .rotationEffect(.degrees(7))
+                .offset(x: topStickX, y: topStickY)
+                .rotationEffect(.degrees(topStickRotation))
             
             // Bottom wood stick - positioned relative to the shortest tile
             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -51,8 +69,8 @@ struct XylophoneView: View {
                 .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 2)
                 .frame(height: 60)
                 .frame(maxWidth: .infinity)
-                .offset(y: tileHeights.last! / 2 + (tileHeights.last! * 0.13))
-                .rotationEffect(.degrees(-7))
+                .offset(x: bottomStickX, y: bottomStickY)
+                .rotationEffect(.degrees(bottomStickRotation))
             
             // Tiles
             HStack(spacing: 10) {
@@ -97,6 +115,6 @@ struct XylophoneView: View {
 #Preview {
     XylophoneView(onPlayNote: { note in
         print("Playing note: \(note)")
-    })
+    }).padding(.horizontal, 20)
 }
 
