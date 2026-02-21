@@ -189,7 +189,7 @@ struct GuideView: View {
                 number: 4,
                 icon: "checkmark.circle.fill",
                 title: "Watch the Indicators",
-                description: "When hand tracking is active, you'll see colored dots on your fingertips (yellow for thumb, red for index) and a green 'Active' status."
+                description: "When hand tracking is active, you'll see colored indicators on your fingertips (blue ring for thumb, orange wand for index) and a green 'Active' status."
             )
         }
     }

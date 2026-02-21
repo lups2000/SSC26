@@ -117,52 +117,72 @@ struct HandTrackingControlPanel: View {
 struct HandTrackingVisualsOnly: View {
     let manager: HandTrackingManager
     
+    /// Check if currently pinching (both fingers close together)
+    private var isPinching: Bool {
+        guard manager.overlayPoints.count >= 2 else { return false }
+        let thumb = manager.overlayPoints[0]
+        let index = manager.overlayPoints[1]
+        let distance = hypot(thumb.x - index.x, thumb.y - index.y)
+        return distance < 60 // Same threshold as HandTrackingManager
+    }
+    
     var body: some View {
         ZStack {
             // MARK: - Magic Wand Overlay
             if manager.settings.isHandTrackingEnabled {
                 WandOverlay(manager: manager)
                 
-                // MARK: - Thumb overlay dot
+                // MARK: - Thumb overlay dot (anchor point)
                 ForEach(manager.overlayPoints.indices, id: \.self) { i in
-                    if i == 0 { // Only show thumb (index 0)
+                    if i == 0 && !isPinching { // Only show thumb when not pinching
                         let point = manager.overlayPoints[i]
                         ZStack {
-                            // Outer glow
+                            // Outer glow - soft purple/lavender
                             Circle()
                                 .fill(
                                     RadialGradient(
                                         colors: [
-                                            Color.yellow.opacity(0.4),
-                                            Color.yellow.opacity(0)
+                                            Color.purple.opacity(0.35),
+                                            Color(red: 0.7, green: 0.5, blue: 0.9).opacity(0.2),
+                                            Color.clear
                                         ],
                                         center: .center,
                                         startRadius: 0,
-                                        endRadius: 20
+                                        endRadius: 25
                                     )
                                 )
-                                .frame(width: 40, height: 40)
+                                .frame(width: 50, height: 50)
+                                .blur(radius: 5)
                             
-                            // Main dot
+                            // Main ring (hollow center)
                             Circle()
-                                .fill(Color.yellow)
-                                .frame(width: 24, height: 24)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            Color(red: 0.75, green: 0.55, blue: 0.95),
+                                            Color(red: 0.65, green: 0.45, blue: 0.85)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 3
+                                )
+                                .frame(width: 20, height: 20)
                             
-                            // White stroke for contrast
-                            Circle()
-                                .stroke(Color.white, lineWidth: 3)
-                                .frame(width: 24, height: 24)
-                            
-                            // Inner highlight
+                            // Inner dot - very small with slight purple tint
                             Circle()
                                 .fill(
-                                    LinearGradient(
-                                        colors: [Color.white.opacity(0.6), Color.white.opacity(0)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
+                                    RadialGradient(
+                                        colors: [
+                                            Color.white,
+                                            Color(red: 0.9, green: 0.85, blue: 1.0)
+                                        ],
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 3
                                     )
                                 )
-                                .frame(width: 24, height: 24)
+                                .frame(width: 6, height: 6)
                                 .offset(y: -3)
                         }
                         .position(x: point.x, y: point.y)

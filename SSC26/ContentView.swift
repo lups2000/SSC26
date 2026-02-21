@@ -21,7 +21,7 @@ struct ContentView: View {
                 NavigationLink {
                     FreePlayView(columnVisibility: $columnVisibility)
                 } label: {
-                    Label("Play XyloFingers", systemImage: "hand.point.up.fill")
+                    Label("Free Play", systemImage: "hand.pinch.fill")
                 }
             }
             .navigationTitle("XyloFingers")
