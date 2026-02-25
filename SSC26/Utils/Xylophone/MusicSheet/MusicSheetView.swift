@@ -65,7 +65,7 @@ private struct EngravedNoteView: View {
                 )
 
             // Stem (white to match ink on chalkboard; tweak if needed)
-            Rectangle()
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
                 .fill(Color.white)
                 .frame(width: 2.5, height: stemLength)
                 .offset(x: stemUp ? noteSize * 0.40 : -noteSize * 0.55,
@@ -200,27 +200,57 @@ struct MusicSheetView: View {
                                 .rotationEffect(.degrees(0.8))
 
                             HStack(spacing: 16) {
+                                // Restart button (hand-drawn style)
                                 Button {
                                     onRestart()
                                 } label: {
                                     Text("Restart")
-                                        .font(.system(size: 18, weight: .semibold))
-                                        .padding(.horizontal, 20)
-                                        .padding(.vertical, 10)
-                                        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white))
-                                        .foregroundStyle(Color.black)
+                                        .font(.custom("Marker Felt", size: 24).weight(.thin))
+                                        .foregroundStyle(Color.white)
+                                        .kerning(0.5)
+                                        .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 12)
+                                        .background(
+                                            // Hand-drawn circle/bubble
+                                            ZStack {
+                                                // Chalk outline (slightly irregular)
+                                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                                    .stroke(Color.white.opacity(0.7), lineWidth: 3)
+                                                
+                                                // Inner subtle fill
+                                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                                    .fill(Color.white.opacity(0.08))
+                                            }
+                                        )
                                 }
+                                .buttonStyle(.plain)
 
+                                // Close button (hand-drawn style)
                                 Button {
                                     onClose()
                                 } label: {
                                     Text("Close")
-                                        .font(.system(size: 18, weight: .semibold))
-                                        .padding(.horizontal, 20)
-                                        .padding(.vertical, 10)
-                                        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.white, lineWidth: 2))
+                                        .font(.custom("Marker Felt", size: 24).weight(.thin))
                                         .foregroundStyle(Color.white)
+                                        .kerning(0.5)
+                                        .shadow(color: .white.opacity(0.12), radius: 1, x: 0, y: 1)
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 12)
+                                        .background(
+                                            // Hand-drawn circle/bubble
+                                            ZStack {
+                                                // Chalk outline (slightly irregular)
+                                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                                    .stroke(Color.white.opacity(0.7), lineWidth: 3)
+                                                
+                                                // Inner subtle fill
+                                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                                    .fill(Color.white.opacity(0.08))
+                                            }
+                                        )
                                 }
+                                .buttonStyle(.plain)
                             }.padding(.top, 15)
                         }
                         .frame(maxWidth: .infinity)
@@ -385,7 +415,7 @@ private struct ChalkPieceView: View {
     let length: CGFloat
     
     var body: some View {
-        Capsule()
+        RoundedRectangle(cornerRadius: 3, style: .continuous)
             .fill(
                 LinearGradient(
                     colors: [
@@ -447,7 +477,7 @@ private struct EraserView: View {
         SheetNote(pitch: 3.2, color: .green, isTarget: false),    // F
         SheetNote(pitch: 2.1, color: .teal, isTarget: false),     // G
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
-    ], title: "First Melody", isCorrect: false, progress: 0.42, onRestart: {
+    ], title: "First Melody", isCorrect: false, progress: 1.42, onRestart: {
         print("Restart")
     }, onClose: {
         print("Close")

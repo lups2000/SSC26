@@ -94,16 +94,10 @@ struct XylophoneTileView: View {
         .scaleEffect(activePress ? 0.97 : 1)
         .offset(y: activePress ? 3 : 0)
         .shadow(
-            color: adaptiveColor.opacity(activePress ? 0.2 : 0.4),
-            radius: activePress ? 6 : 12,
+            color: Color.black.opacity(0.20),
+            radius: 2,
             x: 0,
-            y: activePress ? 3 : 8
-        )
-        .shadow(
-            color: Color.black.opacity(activePress ? 0.1 : 0.2),
-            radius: activePress ? 2 : 4,
-            x: 0,
-            y: activePress ? 1 : 2
+            y: 1
         )
         .contentShape(Rectangle())
         .onTapGesture {
@@ -150,52 +144,17 @@ struct MountingHole: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color(red: 0.35, green: 0.35, blue: 0.4),
-                                Color(red: 0.45, green: 0.45, blue: 0.5),
-                                Color(red: 0.55, green: 0.55, blue: 0.6),
-                                Color(red: 0.4, green: 0.4, blue: 0.45)
+                                Color(red: 0.40, green: 0.40, blue: 0.43),
+                                Color(red: 0.48, green: 0.48, blue: 0.52),
+                                Color(red: 0.58, green: 0.58, blue: 0.62),
+                                Color(red: 0.45, green: 0.45, blue: 0.48)
                             ],
                             center: UnitPoint(x: 0.4, y: 0.4),
                             startRadius: 2,
-                            endRadius: 15
+                            endRadius: 10
                         )
                     )
                     .frame(width: 30, height: 30)
-                
-                // Metallic ring effect
-                Circle()
-                    .strokeBorder(
-                        AngularGradient(
-                            colors: [
-                                Color(red: 0.6, green: 0.6, blue: 0.65),
-                                Color(red: 0.45, green: 0.45, blue: 0.5),
-                                Color(red: 0.55, green: 0.55, blue: 0.6),
-                                Color(red: 0.4, green: 0.4, blue: 0.45),
-                                Color(red: 0.6, green: 0.6, blue: 0.65)
-                            ],
-                            center: .center,
-                            startAngle: .degrees(0),
-                            endAngle: .degrees(360)
-                        ),
-                        lineWidth: 2
-                    )
-                    .frame(width: 30, height: 30)
-                
-                // Top-left specular highlight (shiny metal)
-                Circle()
-                    .trim(from: 0.65, to: 0.85)
-                    .stroke(Color.white.opacity(0.5), lineWidth: 2.5)
-                    .frame(width: 29, height: 29)
-                    .rotationEffect(.degrees(-35))
-                    .blur(radius: 0.8)
-                
-                // Bottom-right darker edge
-                Circle()
-                    .trim(from: 0.15, to: 0.35)
-                    .stroke(Color.black.opacity(0.5), lineWidth: 2)
-                    .frame(width: 29, height: 29)
-                    .rotationEffect(.degrees(-35))
-                    .blur(radius: 0.5)
                 
                 // Outer edge definition
                 Circle()
@@ -207,7 +166,7 @@ struct MountingHole: View {
                     .stroke(Color.black.opacity(0.4), lineWidth: 0.8)
                     .frame(width: 17, height: 17)
             }
-            .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 1.5)
+            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1.5)
             .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 0.5)
             
             // Inner hole (drilled through effect)
@@ -223,7 +182,7 @@ struct MountingHole: View {
                             ],
                             center: .center,
                             startRadius: 0,
-                            endRadius: 8
+                            endRadius: 10
                         )
                     )
                     .frame(width: 16, height: 16)
@@ -235,39 +194,18 @@ struct MountingHole: View {
                         RadialGradient(
                             colors: [
                                 Color.white,
-                                Color.white.opacity(0.78),
-                                Color.white.opacity(0.72)
+                                Color.white.opacity(0.68),
+                                Color.white.opacity(0.62)
                             ],
                             center: UnitPoint(x: 0.45, y: 0.45), // Slight offset for lighting
                             startRadius: 0,
-                            endRadius: 8
+                            endRadius: 20
                         )
                     )
                     .frame(width: 14, height: 14)
-                
-                // Top-left highlight (light catching the edge)
-                Circle()
-                    .trim(from: 0.6, to: 0.85)
-                    .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
-                    .frame(width: 15, height: 15)
-                    .rotationEffect(.degrees(-45))
-                    .blur(radius: 0.5)
-                
-                // Bottom-right shadow (opposite side)
-                Circle()
-                    .trim(from: 0.1, to: 0.35)
-                    .stroke(Color.black.opacity(0.3), lineWidth: 1.5)
-                    .frame(width: 15, height: 15)
-                    .rotationEffect(.degrees(-45))
-                    .blur(radius: 0.5)
+
             }
             
-            // Subtle highlight on edge
-            Circle()
-                .trim(from: 0, to: 0.25)
-                .stroke(Color.white.opacity(0.3), lineWidth: 2)
-                .frame(width: 28, height: 28)
-                .rotationEffect(.degrees(-45))
         }
     }
 }
