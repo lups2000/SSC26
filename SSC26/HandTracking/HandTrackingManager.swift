@@ -45,6 +45,10 @@ final class HandTrackingManager {
     /// Set to the tile index to trigger animation, or nil to clear all animations.
     var pressedTileIndex: Int? = nil
     
+    /// The currently active note being played (for visual feedback).
+    /// Set when a pinch is detected on a tile, cleared when fingers separate.
+    var currentNote: String? = nil
+    
     // MARK: - Public Methods
     
     /// Call this from your CameraView's onUpdate closure.
@@ -79,6 +83,7 @@ final class HandTrackingManager {
         guard points.count >= 2 else {
             lastPinchNote = nil   // fingers separated or lost — allow re-trigger
             pressedTileIndex = nil // clear tile animation
+            currentNote = nil     // clear note feedback
             return
         }
         
@@ -89,6 +94,7 @@ final class HandTrackingManager {
         guard distance < Self.pinchThreshold else {
             lastPinchNote = nil   // fingers separated — reset so next pinch fires
             pressedTileIndex = nil // clear tile animation
+            currentNote = nil     // clear note feedback
             return
         }
         
@@ -107,6 +113,7 @@ final class HandTrackingManager {
             
             lastPinchNote = note
             pressedTileIndex = i // trigger visual animation
+            currentNote = note   // expose for visual feedback
             
             // Play the sound
             SoundPlayer.shared.play(note: note)

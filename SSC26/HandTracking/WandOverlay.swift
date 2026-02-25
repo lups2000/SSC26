@@ -6,6 +6,7 @@ struct WandOverlay: View {
     let manager: HandTrackingManager
     
     @State private var sparkles: [SparkleParticle] = []
+    @State private var impactEffects: [ImpactEffect] = []
     @State private var lastPinchState: Bool = false
     
     var body: some View {
@@ -15,7 +16,11 @@ struct WandOverlay: View {
                 ForEach(manager.overlayPoints.indices, id: \.self) { i in
                     if i == 1 { // Index finger only
                         let point = manager.overlayPoints[i]
-                        WandView(position: point, isPinching: isPinching)
+                        WandView(
+                            position: point,
+                            isPinching: isPinching,
+                            noteColor: noteColor
+                        )
                     }
                 }
                 
@@ -23,17 +28,23 @@ struct WandOverlay: View {
                 ForEach(sparkles) { sparkle in
                     SparkleView(sparkle: sparkle)
                 }
+                
+                // Draw impact effects with note names
+                ForEach(impactEffects) { impact in
+                    ImpactEffectView(impact: impact)
+                }
             }
         }
         .onChange(of: isPinching) { oldValue, newValue in
             if newValue && !oldValue {
-                // Just started pinching - create sparkles!
+                // Just started pinching - create sparkles and impact!
                 createSparkles()
+                createImpactEffect()
             }
         }
         .onAppear {
-            // Start animation loop to update sparkles
-            startSparkleAnimation()
+            // Start animation loop to update sparkles and impacts
+            startAnimationLoop()
         }
     }
     
@@ -46,10 +57,34 @@ struct WandOverlay: View {
         return distance < 60 // Same threshold as HandTrackingManager
     }
     
+    /// Get the color for the current note being played
+    private var noteColor: Color {
+        guard let note = manager.currentNote else {
+            return Color.yellow // Default color when no note
+        }
+        return NoteColorMapper.color(for: note)
+    }
+    
+    /// Create impact effect when striking a note
+    private func createImpactEffect() {
+        guard manager.overlayPoints.count >= 2,
+              let note = manager.currentNote else { return }
+        
+        let wandTip = manager.overlayPoints[1]
+        let color = NoteColorMapper.color(for: note)
+        
+        impactEffects.append(ImpactEffect(
+            position: wandTip,
+            note: note,
+            color: color
+        ))
+    }
+    
     /// Create sparkle particles at the wand tip
     private func createSparkles() {
         guard manager.overlayPoints.count >= 2 else { return }
         let wandTip = manager.overlayPoints[1]
+        let color = noteColor
         
         // Create 5-8 sparkles in random directions
         for _ in 0..<Int.random(in: 5...8) {
@@ -62,15 +97,17 @@ struct WandOverlay: View {
                     x: cos(angle) * speed,
                     y: sin(angle) * speed
                 ),
-                lifetime: Double.random(in: 0.3...0.5)
+                lifetime: Double.random(in: 0.3...0.5),
+                color: color
             ))
         }
     }
     
-    /// Animation loop to update sparkle positions
-    private func startSparkleAnimation() {
+    /// Animation loop to update sparkles and impact effects
+    private func startAnimationLoop() {
         Timer.scheduledTimer(withTimeInterval: 1/60.0, repeats: true) { _ in
             updateSparkles()
+            updateImpactEffects()
         }
     }
     
@@ -95,12 +132,28 @@ struct WandOverlay: View {
             return updated
         }
     }
+    
+    /// Update impact effect animations and remove finished ones
+    private func updateImpactEffects() {
+        let deltaTime: CGFloat = 1/60.0
+        
+        impactEffects = impactEffects.compactMap { effect in
+            var updated = effect
+            updated.age += deltaTime
+            
+            // Remove if animation complete
+            guard updated.age < updated.duration else { return nil }
+            
+            return updated
+        }
+    }
 }
 
 /// Visual representation of the xylophone mallet
 struct WandView: View {
     let position: CGPoint
     let isPinching: Bool
+    let noteColor: Color
     
     var body: some View {
         ZStack {
@@ -135,7 +188,7 @@ struct WandView: View {
                 // Back shadow for depth
                 Capsule()
                     .fill(Color.black.opacity(0.3))
-                    .frame(width: 18, height: 200)
+                    .frame(width: 22, height: 240)
                     .blur(radius: 2)
                     .offset(x: 1, y: 1)
                 
@@ -152,7 +205,7 @@ struct WandView: View {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 16, height: 200)
+                    .frame(width: 20, height: 240)
                 
                 // Highlight on left edge
                 Capsule()
@@ -166,8 +219,8 @@ struct WandView: View {
                             endPoint: .trailing
                         )
                     )
-                    .frame(width: 6, height: 200)
-                    .offset(x: -5)
+                    .frame(width: 8, height: 240)
+                    .offset(x: -6)
             }
             .offset(y: 90) // Moved down so finger is near the mallet head
             
@@ -179,17 +232,17 @@ struct WandView: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color.orange.opacity(isPinching ? 0.6 : 0.3),
-                                Color.yellow.opacity(isPinching ? 0.4 : 0.15),
+                                noteColor.opacity(isPinching ? 0.7 : 0.3),
+                                noteColor.opacity(isPinching ? 0.5 : 0.15),
                                 Color.clear
                             ],
                             center: .center,
                             startRadius: 0,
-                            endRadius: 50
+                            endRadius: 60
                         )
                     )
-                    .frame(width: 100, height: 100)
-                    .blur(radius: isPinching ? 12 : 6)
+                    .frame(width: 120, height: 120)
+                    .blur(radius: isPinching ? 14 : 8)
                     .scaleEffect(isPinching ? 1.3 : 1.0)
                 
                 // The mallet ball (felt-covered head)
@@ -197,8 +250,8 @@ struct WandView: View {
                     // Shadow underneath
                     Circle()
                         .fill(Color.black.opacity(0.3))
-                        .frame(width: 60, height: 60)
-                        .blur(radius: 3)
+                        .frame(width: 72, height: 72)
+                        .blur(radius: 4)
                         .offset(x: 2, y: 2)
                     
                     // Main felt ball - outer layer
@@ -211,11 +264,11 @@ struct WandView: View {
                                 ],
                                 center: .center,
                                 startRadius: 0,
-                                endRadius: 28
+                                endRadius: 34
                             )
                         )
-                        .frame(width: 56, height: 56)
-                        .shadow(color: .black.opacity(0.3), radius: isPinching ? 8 : 4)
+                        .frame(width: 68, height: 68)
+                        .shadow(color: .black.opacity(0.3), radius: isPinching ? 10 : 5)
                     
                     // Highlight to show sphere shape
                     Circle()
@@ -227,15 +280,15 @@ struct WandView: View {
                                 ],
                                 center: UnitPoint(x: 0.3, y: 0.3),
                                 startRadius: 0,
-                                endRadius: 28
+                                endRadius: 34
                             )
                         )
-                        .frame(width: 56, height: 56)
+                        .frame(width: 68, height: 68)
                     
                     // Rim shadow for depth
                     Circle()
                         .stroke(Color.black.opacity(0.2), lineWidth: 1)
-                        .frame(width: 56, height: 56)
+                        .frame(width: 68, height: 68)
                 }
                 .scaleEffect(isPinching ? 1.15 : 1.0)
                 .animation(.spring(response: 0.2, dampingFraction: 0.5), value: isPinching)
@@ -254,7 +307,7 @@ struct SparkleParticle: Identifiable {
     var velocity: CGPoint
     var age: CGFloat = 0
     let lifetime: CGFloat
-    let color: Color = [Color.orange, Color.yellow].randomElement()!
+    let color: Color
     let size: CGFloat = CGFloat.random(in: 8...12)
 }
 
@@ -287,12 +340,105 @@ struct SparkleView: View {
     }
 }
 
+// MARK: - Impact Effect
+
+/// An impact effect that shows the note name and visual burst when striking
+struct ImpactEffect: Identifiable {
+    let id = UUID()
+    var position: CGPoint
+    let note: String
+    let color: Color
+    var age: CGFloat = 0
+    let duration: CGFloat = 0.6
+}
+
+/// Visual representation of an impact effect
+struct ImpactEffectView: View {
+    let impact: ImpactEffect
+    
+    var body: some View {
+        let progress = impact.age / impact.duration
+        let opacity = max(0, 1.0 - progress)
+        let scale = 1.0 + (progress * 2.0) // Expands outward
+        
+        ZStack {
+            // Expanding ring burst
+            Circle()
+                .strokeBorder(impact.color, lineWidth: 4)
+                .frame(width: 60, height: 60)
+                .scaleEffect(scale)
+                .opacity(opacity * 0.8)
+            
+            // Inner flash
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            impact.color.opacity(opacity * 0.8),
+                            impact.color.opacity(opacity * 0.3),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 40
+                    )
+                )
+                .frame(width: 80, height: 80)
+                .scaleEffect(scale * 0.7)
+                .blur(radius: 4)
+        }
+        .position(x: impact.position.x, y: impact.position.y - 25) // Moved up by 40 points
+    }
+}
+
+// MARK: - Note Color Mapping
+
+/// Maps xylophone notes to rainbow colors
+struct NoteColorMapper {
+    static func color(for note: String) -> Color {
+        switch note {
+        case "C":
+            return .red
+        case "D":
+            return .orange
+        case "E":
+            return .yellow
+        case "F":
+            return .green
+        case "G":
+            return .teal
+        case "A":
+            return .blue
+        case "B":
+            return .indigo
+        case "C_H":
+            return .purple
+        default:
+            return .yellow
+        }
+    }
+}
+
 #Preview {
     ZStack {
         Color.black.opacity(0.3)
         
-        // Simulate wand at center with pinching
-        WandView(position: CGPoint(x: 200, y: 300), isPinching: true)
+        // Simulate wand at center with pinching on note C
+        WandView(
+            position: CGPoint(x: 200, y: 300),
+            isPinching: true,
+            noteColor: .red
+        )
+        
+        // Show an impact effect
+        ImpactEffectView(
+            impact: ImpactEffect(
+                position: CGPoint(x: 200, y: 300),
+                note: "C",
+                color: .red,
+                age: 0.1
+            )
+        )
     }
     .ignoresSafeArea()
 }
