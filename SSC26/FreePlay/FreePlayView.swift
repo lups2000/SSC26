@@ -61,7 +61,7 @@ struct FreePlayView: View {
                     
         }
         .ignoresSafeArea()
-        .navigationTitle("")
+        .navigationTitle("Free Play")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {
             columnVisibility = .all

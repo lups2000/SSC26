@@ -141,13 +141,13 @@ struct HandTrackingVisualsOnly: View {
                     if i == 0 && !isPinching { // Only show thumb when not pinching
                         let point = manager.overlayPoints[i]
                         ZStack {
-                            // Outer glow - soft purple/lavender
+                            // Outer glow - subtle gray
                             Circle()
                                 .fill(
                                     RadialGradient(
                                         colors: [
-                                            Color.purple.opacity(0.35),
-                                            Color(red: 0.7, green: 0.5, blue: 0.9).opacity(0.2),
+                                            Color.gray.opacity(0.35),
+                                            Color.gray.opacity(0.2),
                                             Color.clear
                                         ],
                                         center: .center,
@@ -158,13 +158,13 @@ struct HandTrackingVisualsOnly: View {
                                 .frame(width: 50, height: 50)
                                 .blur(radius: 5)
                             
-                            // Main ring (hollow center)
+                            // Main ring (hollow center) - gray
                             Circle()
                                 .stroke(
                                     LinearGradient(
                                         colors: [
-                                            Color(red: 0.75, green: 0.55, blue: 0.95),
-                                            Color(red: 0.65, green: 0.45, blue: 0.85)
+                                            Color.gray.opacity(0.9),
+                                            Color.gray.opacity(0.7)
                                         ],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
@@ -173,19 +173,9 @@ struct HandTrackingVisualsOnly: View {
                                 )
                                 .frame(width: 20, height: 20)
                             
-                            // Inner dot - very small with slight purple tint
+                            // Inner dot - simple white
                             Circle()
-                                .fill(
-                                    RadialGradient(
-                                        colors: [
-                                            Color.white,
-                                            Color(red: 0.9, green: 0.85, blue: 1.0)
-                                        ],
-                                        center: .center,
-                                        startRadius: 0,
-                                        endRadius: 3
-                                    )
-                                )
+                                .fill(Color.white)
                                 .frame(width: 6, height: 6)
                                 .offset(y: -3)
                         }

@@ -387,7 +387,7 @@ struct ImpactEffectView: View {
                 .scaleEffect(scale * 0.7)
                 .blur(radius: 4)
         }
-        .position(x: impact.position.x, y: impact.position.y - 25) // Moved up by 40 points
+        .position(x: impact.position.x + 10, y: impact.position.y - 25)
     }
 }
 
