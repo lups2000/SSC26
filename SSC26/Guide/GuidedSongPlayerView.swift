@@ -61,16 +61,14 @@ struct GuidedSongPlayerView: View {
                             isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
                             isTracking: handTrackingManager.isTracking,
                             onToggle: {
-                                handTrackingManager.settings.isHandTrackingEnabled.toggle()
+                                await handTrackingManager.settings.toggleHandTracking()
                                 if !handTrackingManager.settings.isHandTrackingEnabled {
                                     handTrackingManager.resetTracking()
                                     shouldInitializeCamera = false
                                 } else {
                                     // Delay camera initialization to prevent UI freeze
-                                    Task {
-                                        try? await Task.sleep(for: .milliseconds(300))
-                                        shouldInitializeCamera = true
-                                    }
+                                    try? await Task.sleep(for: .milliseconds(300))
+                                    shouldInitializeCamera = true
                                 }
                             }
                         )

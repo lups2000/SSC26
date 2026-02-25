@@ -7,7 +7,7 @@ import SwiftUI
 struct HandTrackingControlPanel: View {
     let isEnabled: Bool
     let isTracking: Bool
-    let onToggle: () -> Void
+    let onToggle: () async -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -45,7 +45,11 @@ struct HandTrackingControlPanel: View {
                         .shadow(color: .white.opacity(0.5), radius: 0, x: 0, y: 1)
                     
                     // Button/Switch
-                    Button(action: onToggle) {
+                    Button(action: {
+                        Task {
+                            await onToggle()
+                        }
+                    }) {
                         ZStack {
                             // Button housing
                             Circle()

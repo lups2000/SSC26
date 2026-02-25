@@ -16,6 +16,9 @@ struct GuideView: View {
                     // Quick Actions
                     quickActionsSection
                     
+                    // Play Modes Section
+                    playModesSection
+                    
                     Divider()
                         .padding(.vertical, 8)
                     
@@ -24,13 +27,16 @@ struct GuideView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "hand.raised.fill")
                                 .font(.title2)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(.green)
                             
                             Text("Hand Tracking Guide")
                                 .font(.title2)
                                 .fontWeight(.bold)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        // Camera permission notice
+                        cameraPermissionNotice
                         
                         // Interactive toggle control
                         handTrackingToggleControl
@@ -55,36 +61,102 @@ struct GuideView: View {
     
     private var quickActionsSection: some View {
         VStack(spacing: 16) {
-            Text("Getting Started")
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Two Ways to Play")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Choose the mode that works best for you")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                quickActionCard(icon: "hand.tap.fill", color: .blue, title: "Touch Mode", subtitle: "Tap to play")
-                quickActionCard(icon: "hand.raised.fill", color: .green, title: "Hand Tracking", subtitle: "Gesture control")
-                quickActionCard(icon: "music.note.list", color: .purple, title: "Practice", subtitle: "Follow songs")
-                quickActionCard(icon: "music.quarternote.3", color: .orange, title: "Free Play", subtitle: "Explore sounds")
+            HStack(spacing: 16) {
+                playModeCard(
+                    icon: "hand.tap.fill",
+                    color: .blue,
+                    title: "Touch Mode",
+                    description: "Tap the xylophone bars directly on screen. Perfect for beginners and quick play sessions.",
+                    badge: "Beginner"
+                )
+                
+                playModeCard(
+                    icon: "hand.raised.fill",
+                    color: .green,
+                    title: "Hand Tracking",
+                    description: "Use pinch gestures in the air to play notes. A hands-free, magical way to make music.",
+                    badge: "Hands-Free"
+                )
             }
         }
     }
     
-    private func quickActionCard(icon: String, color: Color, title: String, subtitle: String) -> some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 32, weight: .semibold))
-                .foregroundStyle(color)
+    // MARK: - Play Modes
+    
+    private var playModesSection: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("What to Play")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Learn with guidance or explore freely")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            HStack(spacing: 16) {
+                playModeCard(
+                    icon: "music.note.list",
+                    color: .purple,
+                    title: "Practice",
+                    description: "Follow along with guided songs. Visual cues show you which notes to play next.",
+                    badge: "Guided"
+                )
+                
+                playModeCard(
+                    icon: "music.quarternote.3",
+                    color: .orange,
+                    title: "Free Play",
+                    description: "Create your own melodies. Explore the xylophone and make music your way.",
+                    badge: "Creative"
+                )
+            }
+        }
+    }
+    
+    private func playModeCard(icon: String, color: Color, title: String, description: String, badge: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(color)
+                
+                Spacer()
+                
+                Text(badge)
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(color)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(color.opacity(0.15))
+                    .clipShape(Capsule())
+            }
             
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.headline)
+                .fontWeight(.bold)
             
-            Text(subtitle)
-                .font(.caption)
+            Text(description)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(20)
         .background {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(colorScheme == .dark ? Color(white: 0.15).opacity(0.7) : Color.white.opacity(0.8))
@@ -95,6 +167,7 @@ struct GuideView: View {
         }
     }
     
+
     // MARK: - Header Section
     
     private var headerSection: some View {
@@ -135,7 +208,7 @@ struct GuideView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text("XyloFingers is an interactive xylophone app that lets you make music with your fingers! Whether you tap the screen or use hand gestures, you'll create beautiful melodies in no time.")
+            Text("XyloFingers is a fun, interactive xylophone app that turns your fingers into musical magic! Tap the screen or use hand gestures to play vibrant notes and create beautiful melodies in seconds.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -162,34 +235,71 @@ struct GuideView: View {
     
     // MARK: - Hand Tracking Steps
     
+    private var cameraPermissionNotice: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "info.circle.fill")
+                .font(.title3)
+                .foregroundStyle(.blue)
+                .frame(width: 32)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Camera Access")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                
+                Text("You'll be asked for camera permission when you enable hand tracking")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(14)
+        .background {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(colorScheme == .dark ? Color.blue.opacity(0.12) : Color.blue.opacity(0.08))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.blue.opacity(0.3), lineWidth: 1.5)
+        }
+    }
+    
     private var handTrackingSteps: some View {
         VStack(spacing: 16) {
             handTrackingStep(
                 number: 1,
-                icon: "ipad.and.iphone",
-                title: "Position Your Device",
-                description: "Place your iPad on a stand or flat surface with the camera facing you. Make sure you have good lighting."
+                icon: "ipad.landscape",
+                title: "Rotate to Landscape",
+                description: "Place your iPad in landscape orientation with the front camera facing you. Ensure good lighting for best results."
             )
             
             handTrackingStep(
                 number: 2,
-                icon: "hand.raised.fingers.spread.fill",
-                title: "Show Your Hand",
-                description: "Hold your hand in front of the camera (about 30-50cm away). The app will detect your thumb and index finger automatically."
+                icon: "camera.fill",
+                title: "Enable Hand Tracking",
+                description: "Use the toggle control above or in the control panel. You'll be prompted to grant camera access when enabling it for the first time."
             )
             
             handTrackingStep(
                 number: 3,
-                icon: "hand.pinch.fill",
-                title: "Make a Pinch Gesture",
-                description: "Bring your thumb and index finger together to play a note. Position your pinch over the xylophone bar you want to play."
+                icon: "hand.raised.fingers.spread.fill",
+                title: "Show Your Hand",
+                description: "Hold your hand 30-50cm from the camera. You'll see a small purple dot on your thumb and a magic wand indicator on your index finger."
             )
             
             handTrackingStep(
                 number: 4,
-                icon: "checkmark.circle.fill",
-                title: "Watch the Indicators",
-                description: "When hand tracking is active, you'll see colored indicators on your fingertips (blue ring for thumb, orange wand for index) and a green 'Active' status."
+                icon: "hand.pinch.fill",
+                title: "Pinch to Play",
+                description: "Touch your thumb and index finger together above a xylophone bar. Each pinch plays that note!"
+            )
+            
+            handTrackingStep(
+                number: 5,
+                icon: "video.fill",
+                title: "Watch the Status Indicator",
+                description: "Look for the status indicator: orange means ready and waiting, green means actively tracking your hand. If tracking is lost, adjust your hand position or lighting."
             )
         }
     }
@@ -201,7 +311,7 @@ struct GuideView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [.blue, .blue.opacity(0.8)],
+                            colors: [.green, .green.opacity(0.8)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -217,7 +327,7 @@ struct GuideView: View {
                 HStack(spacing: 8) {
                     Image(systemName: icon)
                         .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.green)
                     
                     Text(title)
                         .font(.headline)
@@ -331,16 +441,25 @@ struct GuideView: View {
     // MARK: - Tips
     
     private var tipsSection: some View {
-        VStack(spacing: 12) {
-            Text("Pro Tips")
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Quick Tips")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Get the most out of your experience")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            tipRow(icon: "lightbulb.fill", color: .yellow, tip: "Start with Level 1 songs")
-            tipRow(icon: "speaker.wave.3.fill", color: .orange, tip: "Turn up your volume")
-            tipRow(icon: "hand.pinch.fill", color: .green, tip: "Make clear pinch gestures")
-            tipRow(icon: "star.fill", color: .pink, tip: "Practice makes perfect!")
+            VStack(spacing: 10) {
+                tipRow(icon: "sun.max.fill", color: .yellow, tip: "Good lighting improves hand tracking accuracy")
+                tipRow(icon: "hand.point.up.left.fill", color: .blue, tip: "Keep your hand steady for clearer detection")
+                tipRow(icon: "speaker.wave.3.fill", color: .orange, tip: "Adjust volume in Settings for the perfect sound")
+                tipRow(icon: "arrow.triangle.2.circlepath", color: .green, tip: "Switch between modes anytime using the toggle")
+                tipRow(icon: "star.fill", color: .pink, tip: "Experiment with different gestures and speeds!")
+            }
         }
     }
     
