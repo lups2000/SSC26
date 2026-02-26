@@ -88,13 +88,18 @@ struct HandTrackingControlPanel: View {
                     
                     // Status text
                     Text(statusText)
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(statusColor.opacity(0.8))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
                         .background {
                             Capsule()
-                                .fill(statusColor.opacity(0.15))
+                                .fill(statusColor.opacity(0.85))
+                                .shadow(color: statusColor.opacity(0.5), radius: 3, x: 0, y: 1)
+                        }
+                        .overlay {
+                            Capsule()
+                                .stroke(statusColor.opacity(0.3), lineWidth: 1)
                         }
                 }
                 .padding(12)
@@ -104,13 +109,13 @@ struct HandTrackingControlPanel: View {
     }
     
     private var statusColor: Color {
-        if !isEnabled { return .gray }
+        if !isEnabled { return Color(red: 0.6, green: 0.6, blue: 0.65) }
         return isTracking ? .green : .orange
     }
     
     private var statusText: String {
-        if !isEnabled { return "TOUCH" }
-        return isTracking ? "ACTIVE" : "READY"
+        if !isEnabled { return "TOUCH MODE" }
+        return isTracking ? "TRACKING" : "WAITING"
     }
 }
 
@@ -193,7 +198,7 @@ struct HandTrackingVisualsOnly: View {
 
 #Preview("Control Panel") {
     HandTrackingControlPanel(
-        isEnabled: true,
+        isEnabled: false,
         isTracking: true,
         onToggle: {
             print("Toggle tapped")
