@@ -56,6 +56,9 @@ final class CameraViewController: UIViewController {
         return request
     }()
     
+    /// Tracks if a Vision request is currently being processed (prevents queue buildup)
+    private var isProcessingFrame = false
+    
     /// Callback that receives converted finger tip positions for the SwiftUI parent view.
     var pointsProcessorHandler: (([CGPoint]) -> Void)?
     
@@ -80,12 +83,13 @@ final class CameraViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Perform all camera setup asynchronously to avoid blocking the UI
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        // Perform all camera setup on a LOW priority background queue
+        // This ensures UI responsiveness is prioritized
+        DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self = self else { return }
             
             do {
-                // Set up camera session on first appearance
+                // Set up camera session on first appearance (synchronous but on background thread)
                 if self.cameraFeedSession == nil {
                     try self.setupAVSession()
                     
@@ -102,7 +106,7 @@ final class CameraViewController: UIViewController {
                 // Start camera feed (already on background thread)
                 self.cameraFeedSession?.startRunning()
             } catch {
-                print(error.localizedDescription)
+                print("Camera setup error: \(error.localizedDescription)")
             }
         }
     }
@@ -208,6 +212,10 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     /// Called for each video frame captured by the camera.
     /// Performs hand pose detection and extracts thumb and index finger positions.
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        // Skip frame if still processing previous one (prevents queue buildup)
+        guard !isProcessingFrame else { return }
+        isProcessingFrame = true
+        
         // Create Vision request handler from the camera frame
         let handHandler = VNImageRequestHandler(cmSampleBuffer: sampleBuffer, orientation: .up)
         do {
@@ -217,6 +225,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                 // No hand detected - update on main thread asynchronously
                 DispatchQueue.main.async { [weak self] in
                     self?.processPoints([])
+                    self?.isProcessingFrame = false
                 }
                 return
             }
@@ -240,9 +249,11 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             // Update UI on main thread asynchronously (non-blocking)
             DispatchQueue.main.async { [weak self] in
                 self?.processPoints(fingerTips)
+                self?.isProcessingFrame = false
             }
         } catch {
             print("Error tracking hand: \(error.localizedDescription)")
+            isProcessingFrame = false
             cameraFeedSession?.stopRunning()
         }
     }

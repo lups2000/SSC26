@@ -8,6 +8,7 @@ struct WandOverlay: View {
     @State private var sparkles: [SparkleParticle] = []
     @State private var impactEffects: [ImpactEffect] = []
     @State private var lastPinchState: Bool = false
+    @State private var animationTimer: Timer? = nil
     
     var body: some View {
         ZStack {
@@ -45,6 +46,11 @@ struct WandOverlay: View {
         .onAppear {
             // Start animation loop to update sparkles and impacts
             startAnimationLoop()
+        }
+        .onDisappear {
+            // CRITICAL: Stop and invalidate timer to prevent memory leak
+            animationTimer?.invalidate()
+            animationTimer = nil
         }
     }
     
@@ -105,7 +111,11 @@ struct WandOverlay: View {
     
     /// Animation loop to update sparkles and impact effects
     private func startAnimationLoop() {
-        Timer.scheduledTimer(withTimeInterval: 1/60.0, repeats: true) { _ in
+        // Invalidate any existing timer first
+        animationTimer?.invalidate()
+        
+        // Create new timer and store reference for cleanup
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 1/60.0, repeats: true) { [self] _ in
             updateSparkles()
             updateImpactEffects()
         }
@@ -387,7 +397,7 @@ struct ImpactEffectView: View {
                 .scaleEffect(scale * 0.7)
                 .blur(radius: 4)
         }
-        .position(x: impact.position.x + 10, y: impact.position.y - 25)
+        .position(x: impact.position.x + 5, y: impact.position.y - 25)
     }
 }
 
@@ -433,7 +443,7 @@ struct NoteColorMapper {
         // Show an impact effect
         ImpactEffectView(
             impact: ImpactEffect(
-                position: CGPoint(x: 200, y: 300),
+                position: CGPoint(x: 200 + 10, y: 300 - 25),
                 note: "C",
                 color: .red,
                 age: 0.1

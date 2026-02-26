@@ -32,9 +32,13 @@ struct GuidedSongPlayerView: View {
         GeometryReader { geo in
             ZStack {
                 // MARK: - Camera Feed (behind everything) - LAZY LOADED
-                if handTrackingManager.settings.isHandTrackingEnabled && shouldInitializeCamera {
+                if shouldInitializeCamera {
                     CameraView { points in
                         handTrackingManager.handleCameraUpdate(points)
+                    }
+                    .task {
+                        // Give extra time for camera to initialize without blocking
+                        try? await Task.sleep(for: .milliseconds(100))
                     }
                 }
                 
@@ -61,14 +65,21 @@ struct GuidedSongPlayerView: View {
                             isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
                             isTracking: handTrackingManager.isTracking,
                             onToggle: {
+                                // Toggle the setting immediately (feels responsive)
                                 await handTrackingManager.settings.toggleHandTracking()
+                                
                                 if !handTrackingManager.settings.isHandTrackingEnabled {
-                                    handTrackingManager.resetTracking()
+                                    // Turning OFF - immediate cleanup
                                     shouldInitializeCamera = false
+                                    handTrackingManager.resetTracking()
                                 } else {
-                                    // Delay camera initialization to prevent UI freeze
-                                    try? await Task.sleep(for: .milliseconds(300))
-                                    shouldInitializeCamera = true
+                                    // Turning ON - delayed camera init to prevent freeze
+                                    // Do this in a detached task to not block the button
+                                    Task.detached { @MainActor in
+                                        // Small delay to let UI update first
+                                        try? await Task.sleep(for: .milliseconds(100))
+                                        shouldInitializeCamera = true
+                                    }
                                 }
                             }
                         )
@@ -112,13 +123,16 @@ struct GuidedSongPlayerView: View {
                 engine.handleInput(note: note)
             }
             
-            // Delay camera initialization to allow view to render first
-            // This dramatically improves perceived performance
-            try? await Task.sleep(for: .milliseconds(1000))
-            
+            // If hand tracking is already enabled (from a previous session),
+            // initialize camera after view is settled
             if handTrackingManager.settings.isHandTrackingEnabled {
+                try? await Task.sleep(for: .milliseconds(500))
                 shouldInitializeCamera = true
             }
+        }
+        .onDisappear {
+            // Clean up camera when leaving
+            shouldInitializeCamera = false
         }
     }
     
