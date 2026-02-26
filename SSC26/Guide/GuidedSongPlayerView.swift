@@ -42,8 +42,8 @@ struct GuidedSongPlayerView: View {
                     }
                 }
                 
-                // MARK: - Background gradient (semi-transparent so the camera bleeds through)
-                BackgroundGradient()
+                // MARK: - Classroom Wall Background (semi-transparent so the camera bleeds through)
+                ClassroomWallBackground()
                 
                 // MARK: - Main Content
                 VStack(spacing: 8) {
@@ -60,29 +60,36 @@ struct GuidedSongPlayerView: View {
                             onClose: onBack
                         )
                         
-                        // Hand tracking control panel next to chalkboard
-                        HandTrackingControlPanel(
-                            isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
-                            isTracking: handTrackingManager.isTracking,
-                            onToggle: {
-                                // Toggle the setting immediately (feels responsive)
-                                await handTrackingManager.settings.toggleHandTracking()
-                                
-                                if !handTrackingManager.settings.isHandTrackingEnabled {
-                                    // Turning OFF - immediate cleanup
-                                    shouldInitializeCamera = false
-                                    handTrackingManager.resetTracking()
-                                } else {
-                                    // Turning ON - delayed camera init to prevent freeze
-                                    // Do this in a detached task to not block the button
-                                    Task.detached { @MainActor in
-                                        // Small delay to let UI update first
-                                        try? await Task.sleep(for: .milliseconds(100))
-                                        shouldInitializeCamera = true
+                        // Clock and hand tracking control panel stacked vertically
+                        VStack(spacing: 16) {
+                            // Decorative classroom clock
+                            ClassroomClockView()
+                                .frame(width: 90, height: 90)
+                            
+                            // Hand tracking control panel
+                            HandTrackingControlPanel(
+                                isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
+                                isTracking: handTrackingManager.isTracking,
+                                onToggle: {
+                                    // Toggle the setting immediately (feels responsive)
+                                    await handTrackingManager.settings.toggleHandTracking()
+                                    
+                                    if !handTrackingManager.settings.isHandTrackingEnabled {
+                                        // Turning OFF - immediate cleanup
+                                        shouldInitializeCamera = false
+                                        handTrackingManager.resetTracking()
+                                    } else {
+                                        // Turning ON - delayed camera init to prevent freeze
+                                        // Do this in a detached task to not block the button
+                                        Task.detached { @MainActor in
+                                            // Small delay to let UI update first
+                                            try? await Task.sleep(for: .milliseconds(100))
+                                            shouldInitializeCamera = true
+                                        }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     
                     }
                     

@@ -25,8 +25,8 @@ struct FreePlayView: View {
                     }
                 }
 
-                // MARK: - Background gradient (semi-transparent so the camera bleeds through)
-                BackgroundGradient()
+                // MARK: - Classroom Wall Background (semi-transparent so the camera bleeds through)
+                ClassroomWallBackground()
 
                 // MARK: - Xylophone with tile frame tracking
                 XylophoneWithTracking(manager: handTrackingManager) { _ in }

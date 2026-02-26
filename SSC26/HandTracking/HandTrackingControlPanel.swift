@@ -11,38 +11,55 @@ struct HandTrackingControlPanel: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // MARK: - Control panel plate
+            // MARK: - Control panel card
             ZStack {
-                // Shadow behind plate
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color.black.opacity(0.2))
-                    .blur(radius: 4)
-                    .offset(x: 2, y: 3)
+                // Soft shadow behind panel
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.black.opacity(0.15))
+                    .blur(radius: 8)
+                    .offset(x: 0, y: 4)
                 
-                // Main plate (cream/beige like classroom walls)
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                // Main panel card (white/cream with subtle gradient)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color(red: 0.92, green: 0.88, blue: 0.80),
-                                Color(red: 0.88, green: 0.84, blue: 0.76)
+                                Color.white.opacity(0.95),
+                                Color(red: 0.98, green: 0.97, blue: 0.95)
                             ],
-                            startPoint: .top,
-                            endPoint: .bottom
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
                     )
                     .overlay {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.8),
+                                        Color.black.opacity(0.08)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
                     }
+                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
                 
-                VStack(spacing: 6) {
-                    // Label engraved into plate
-                    Text("HAND TRACKING")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(Color.black.opacity(0.4))
-                        .kerning(0.5)
-                        .shadow(color: .white.opacity(0.5), radius: 0, x: 0, y: 1)
+                // Thumbtacks/pins at top corners
+                ThumbTackView()
+                    .offset(x: -55, y: -62)
+                
+                ThumbTackView()
+                    .offset(x: 55, y: -62)
+                
+                VStack(spacing: 10) {
+                    // Label
+                    Text("Hand Tracking")
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color.black.opacity(0.6))
+                        .tracking(0.3)
                     
                     // Button/Switch
                     Button(action: {
@@ -51,60 +68,78 @@ struct HandTrackingControlPanel: View {
                         }
                     }) {
                         ZStack {
-                            // Button housing
+                            // Button background with glow effect when enabled
                             Circle()
                                 .fill(
-                                    RadialGradient(
-                                        colors: [
-                                            Color(red: 0.25, green: 0.25, blue: 0.27),
-                                            Color(red: 0.15, green: 0.15, blue: 0.17)
+                                    LinearGradient(
+                                        colors: isEnabled ? [
+                                            statusColor.opacity(0.2),
+                                            statusColor.opacity(0.1)
+                                        ] : [
+                                            Color.gray.opacity(0.08),
+                                            Color.gray.opacity(0.05)
                                         ],
-                                        center: .center,
-                                        startRadius: 0,
-                                        endRadius: 25
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
                                 )
-                                .frame(width: 50, height: 50)
-                                .overlay {
-                                    Circle()
-                                        .stroke(Color.black.opacity(0.3), lineWidth: 2)
-                                }
-                                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                                .frame(width: 64, height: 64)
                             
-                            // Status indicator ring
+                            // Outer ring
                             Circle()
-                                .stroke(statusColor, lineWidth: 2)
-                                .frame(width: 44, height: 44)
-                                .opacity(isEnabled ? 1 : 0.3)
-                                .shadow(color: statusColor, radius: isEnabled ? 6 : 2)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: isEnabled ? [
+                                            statusColor.opacity(0.6),
+                                            statusColor.opacity(0.4)
+                                        ] : [
+                                            Color.gray.opacity(0.3),
+                                            Color.gray.opacity(0.2)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 3
+                                )
+                                .frame(width: 64, height: 64)
                             
                             // Icon
                             Image(systemName: isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundStyle(isEnabled ? .white : Color.gray.opacity(0.6))
+                                .font(.system(size: 24, weight: .medium))
+                                .foregroundStyle(
+                                    isEnabled ? statusColor : Color.gray.opacity(0.5)
+                                )
+                                .symbolEffect(.bounce, value: isEnabled)
                         }
                     }
                     .buttonStyle(.plain)
                     
-                    // Status text
-                    Text(statusText)
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background {
-                            Capsule()
-                                .fill(statusColor.opacity(0.85))
-                                .shadow(color: statusColor.opacity(0.5), radius: 3, x: 0, y: 1)
-                        }
-                        .overlay {
-                            Capsule()
-                                .stroke(statusColor.opacity(0.3), lineWidth: 1)
-                        }
+                    // Status indicator badge
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(statusColor)
+                            .frame(width: 6, height: 6)
+                            .shadow(color: statusColor.opacity(0.6), radius: 3)
+                        
+                        Text(statusText)
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.black.opacity(0.7))
+                            .tracking(0.5)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background {
+                        Capsule()
+                            .fill(statusColor.opacity(0.15))
+                            .overlay {
+                                Capsule()
+                                    .stroke(statusColor.opacity(0.3), lineWidth: 1)
+                            }
+                    }
                 }
-                .padding(12)
+                .padding(16)
             }
-            .frame(width: 120, height: 110)
+            .frame(width: 140, height: 140)
         }
     }
     
@@ -191,6 +226,37 @@ struct HandTrackingVisualsOnly: View {
             }
         }
         .allowsHitTesting(false) // Visual only, not interactive
+    }
+}
+
+// MARK: - Thumbtack Component
+
+/// A decorative thumbtack/pin for the control panel
+private struct ThumbTackView: View {
+    var body: some View {
+        ZStack {
+            // Shadow
+            Circle()
+                .fill(Color.black.opacity(0.1))
+                .frame(width: 12, height: 12)
+                .blur(radius: 2)
+                .offset(x: 0.2, y: 1)
+            
+            // Pin head (main body) - light wood/brown
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.75, green: 0.76, blue: 0.78),
+                            Color(red: 0.60, green: 0.61, blue: 0.63)
+                        ],
+                        center: .topLeading,
+                        startRadius: 0,
+                        endRadius: 8
+                    )
+                )
+                .frame(width: 8, height: 8)
+        }
     }
 }
 
