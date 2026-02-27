@@ -372,20 +372,30 @@ struct ImpactEffectView: View {
         let scale = 1.0 + (progress * 2.0) // Expands outward
         
         ZStack {
-            // Expanding ring burst
-            Circle()
-                .strokeBorder(impact.color, lineWidth: 4)
-                .frame(width: 60, height: 60)
-                .scaleEffect(scale)
-                .opacity(opacity * 0.8)
+            // Multiple expanding rings with staggered timing (3 rings)
+            ForEach(0..<3, id: \.self) { ringIndex in
+                let delay = CGFloat(ringIndex) * 0.12
+                let ringProgress = max(0, min(1, (progress - delay) / (1.0 - delay)))
+                let ringOpacity = opacity * (1.0 - ringProgress)
+                let ringScale = 1.0 + (ringProgress * 2.5)
+                
+                Circle()
+                    .strokeBorder(
+                        impact.color,
+                        lineWidth: 4 - CGFloat(ringIndex) * 0.6
+                    )
+                    .frame(width: 60, height: 60)
+                    .scaleEffect(ringScale)
+                    .opacity(ringOpacity * 0.7)
+            }
             
-            // Inner flash
+            // Subtle center glow
             Circle()
                 .fill(
                     RadialGradient(
                         colors: [
-                            impact.color.opacity(opacity * 0.8),
-                            impact.color.opacity(opacity * 0.3),
+                            Color.white.opacity(opacity * 0.5),
+                            impact.color.opacity(opacity * 0.6),
                             Color.clear
                         ],
                         center: .center,
