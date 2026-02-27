@@ -33,22 +33,6 @@ struct ClassroomClockView: View {
                 )
                 .shadow(color: .black.opacity(0.12), radius: 2, x: 0, y: 1)
             
-            // Inner highlight ring (softer transition to white face)
-            Circle()
-                .stroke(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.15),
-                            Color.white.opacity(0.08),
-                            Color.clear
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2
-                )
-                .frame(width: 78, height: 78)
-            
             // Clock face (white with softer edge)
             Circle()
                 .fill(Color.white)
@@ -119,9 +103,6 @@ struct ClassroomClockView: View {
 }
 
 #Preview {
-    ZStack {
-        Color.gray.opacity(0.3)
-        ClassroomClockView()
-            .frame(width: 80, height: 80)
-    }
+    ClassroomClockView()
+        .frame(width: 80, height: 80)    
 }

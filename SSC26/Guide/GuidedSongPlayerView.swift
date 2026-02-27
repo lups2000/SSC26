@@ -64,7 +64,7 @@ struct GuidedSongPlayerView: View {
                         VStack(spacing: 16) {
                             // Decorative classroom clock
                             ClassroomClockView()
-                                .frame(width: 90, height: 90)
+                                .frame(width: 85, height: 85)
                             
                             // Hand tracking control panel
                             HandTrackingControlPanel(
