@@ -267,8 +267,36 @@ struct GuideView: View {
     private var gestureVisualizationCard: some View {
         VStack(spacing: 16) {
             gestureCardHeader
-            gesturePlaceholderImage
-            gestureKeyPoints
+            
+            // Two images side by side - no bullet points
+            HStack(spacing: 16) {
+                // Image 1: Hand position
+                Image("hand_position")
+                     .resizable()
+                     .interpolation(.high)
+                     .scaledToFit()
+                     .frame(maxWidth: .infinity)
+                     .frame(height: 500)
+                     .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                // Image 2: Pinch open gesture
+                Image("hand_pinch_open")
+                     .resizable()
+                     .interpolation(.high)
+                     .scaledToFit()
+                     .frame(maxWidth: .infinity)
+                     .frame(height: 500)
+                     .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                // Image 3: Pinch gesture
+                Image("hand_pinch")
+                     .resizable()
+                     .interpolation(.high)
+                     .scaledToFit()
+                     .frame(maxWidth: .infinity)
+                     .frame(height: 500)
+                     .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
         }
         .padding(20)
         .background {
@@ -294,64 +322,9 @@ struct GuideView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var gesturePlaceholderImage: some View {
-        // TODO: Replace this placeholder with your image
-        // Image("hand-tracking-gesture")
-        //     .resizable()
-        //     .aspectRatio(contentMode: .fit)
-        //     .frame(maxHeight: 200)
-        //     .clipShape(RoundedRectangle(cornerRadius: 12))
-        
-        ZStack {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.green.opacity(0.15), Color.green.opacity(0.05)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(height: 180)
-            
-            VStack(spacing: 16) {
-                gesturePlaceholderContent
-                
-                Text("💡 Add your own image here")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-    
-    private var gesturePlaceholderContent: some View {
-        HStack(spacing: 40) {
-            VStack(spacing: 8) {
-                Image(systemName: "ipad.landscape")
-                    .font(.system(size: 50))
-                    .foregroundStyle(.secondary)
-                Text("iPad")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Image(systemName: "arrow.left.and.right")
-                .font(.title2)
-                .foregroundStyle(.green)
-            
-            VStack(spacing: 8) {
-                Image(systemName: "hand.raised.fill")
-                    .font(.system(size: 50))
-                    .foregroundStyle(.green)
-                Text("30-50cm")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-    
     private var gestureKeyPoints: some View {
         VStack(alignment: .leading, spacing: 10) {
-            bulletPoint(icon: "1.circle.fill", text: "Hold your hand 30-50cm from the front camera", color: .green)
+            bulletPoint(icon: "1.circle.fill", text: "Hold your hand 30-40cm (12-16 inches) from the front camera", color: .green)
             bulletPoint(icon: "2.circle.fill", text: "Position your hand over a xylophone bar", color: .green)
             bulletPoint(icon: "3.circle.fill", text: "Touch thumb and index finger together to play", color: .green)
         }
