@@ -7,6 +7,9 @@ final class SoundPlayer {
     private init() {}
 
     func play(note: String) {
+        // Don't play if sound is disabled
+        guard AppSettings.shared.isSoundEnabled else { return }
+        
         guard let url = Bundle.main.url(forResource: note, withExtension: "wav") else {
             print("Sound file not found for note: \(note)")
             return

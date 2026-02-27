@@ -42,10 +42,9 @@ struct FreePlayView: View {
                         
                         // Sound toggle button
                         SoundToggleButton(
-                            isEnabled: true, // Placeholder - will wire up logic later
+                            isEnabled: AppSettings.shared.isSoundEnabled,
                             onToggle: {
-                                // TODO: Wire up sound toggle logic
-                                print("Sound toggle tapped")
+                                AppSettings.shared.toggleSound()
                             }
                         )
                         

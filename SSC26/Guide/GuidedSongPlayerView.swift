@@ -15,19 +15,19 @@ struct GuidedSongPlayerView: View {
     
     /// Delays camera initialization until the view is fully presented
     @State private var shouldInitializeCamera = false
-
+    
     init(song: GuidedSong, columnVisibility: Binding<NavigationSplitViewVisibility>, onBack: @escaping () -> Void) {
         _engine = State(wrappedValue: GuidedSongEngine(song: song))
         _columnVisibility = columnVisibility
         self.onBack = onBack
     }
-
+    
     var body: some View {
         // Adaptive tile heights based on screen size (computed once)
         let isSmallScreen = UIScreen.main.bounds.height < 1000
         let adaptiveTileHeights: [CGFloat] = isSmallScreen
-            ? [470, 440, 410, 380, 340, 310, 280, 240]  // 11-inch iPad
-            : [580, 540, 500, 460, 420, 380, 340, 300]  // 13-inch iPad
+        ? [470, 440, 410, 380, 340, 310, 280, 240]  // 11-inch iPad
+        : [580, 540, 500, 460, 420, 380, 340, 300]  // 13-inch iPad
         
         GeometryReader { geo in
             ZStack {
@@ -60,7 +60,7 @@ struct GuidedSongPlayerView: View {
                             onClose: onBack
                         )
                         
-                        // Clock and control panels
+                        // Clock and control panels stacked vertically
                         VStack(spacing: 16) {
                             // Decorative classroom clock
                             ClassroomClockView()
@@ -70,10 +70,9 @@ struct GuidedSongPlayerView: View {
                             HStack(spacing: 12) {
                                 // Sound toggle button
                                 SoundToggleButton(
-                                    isEnabled: true, // Placeholder - will wire up logic later
+                                    isEnabled: AppSettings.shared.isSoundEnabled,
                                     onToggle: {
-                                        // TODO: Wire up sound toggle logic
-                                        print("Sound toggle tapped")
+                                        AppSettings.shared.toggleSound()
                                     }
                                 )
                                 
@@ -101,6 +100,7 @@ struct GuidedSongPlayerView: View {
                                     }
                                 )
                             }
+                            
                         }
                     
                     }
@@ -226,4 +226,3 @@ struct GuidedSongPlayerView: View {
         )
     }
 }
-

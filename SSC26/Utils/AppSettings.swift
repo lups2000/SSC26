@@ -6,6 +6,7 @@ final class AppSettings {
     static let shared = AppSettings()
     
     var isHandTrackingEnabled: Bool = false
+    var isSoundEnabled: Bool = true
     
     private init() {}
     
@@ -41,5 +42,10 @@ final class AppSettings {
             // Currently disabled - enable with permission check
             await enableHandTracking()
         }
+    }
+    
+    /// Toggle sound on/off
+    func toggleSound() {
+        isSoundEnabled.toggle()
     }
 }
