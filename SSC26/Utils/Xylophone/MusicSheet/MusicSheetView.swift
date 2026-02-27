@@ -37,8 +37,6 @@ private struct EngravedNoteView: View {
     let noteSize: CGFloat
     let stemLength: CGFloat = 35
 
-    private var stemUp: Bool { note.pitch >= 0 }
-
     var body: some View {
         ZStack {
             // Ledger line (simple: show one if far from staff)
@@ -64,12 +62,11 @@ private struct EngravedNoteView: View {
                         .rotationEffect(.degrees(-20))
                 )
 
-            // Stem (white to match ink on chalkboard; tweak if needed)
+            // Stem (always up, always on the right)
             RoundedRectangle(cornerRadius: 3, style: .continuous)
                 .fill(Color.white)
                 .frame(width: 2.5, height: stemLength)
-                .offset(x: stemUp ? noteSize * 0.40 : -noteSize * 0.55,
-                        y: stemUp ? -stemLength/2 : stemLength/2)
+                .offset(x: noteSize * 0.40, y: -stemLength/2)
         }
     }
 }
@@ -477,7 +474,7 @@ private struct EraserView: View {
         SheetNote(pitch: 3.2, color: .green, isTarget: false),    // F
         SheetNote(pitch: 2.1, color: .teal, isTarget: false),     // G
         SheetNote(pitch: 1.0, color: .blue, isTarget: false),     // A
-    ], title: "First Melody", isCorrect: false, progress: 1.42, onRestart: {
+    ], title: "First Melody", isCorrect: false, progress: 0.42, onRestart: {
         print("Restart")
     }, onClose: {
         print("Close")
