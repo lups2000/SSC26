@@ -1,5 +1,7 @@
 import SwiftUI
 
+import SwiftUI
+
 // MARK: - Hand Tracking Control Panel (Reusable Component)
 
 /// A reusable control panel for toggling hand tracking on/off with visual status indicators.
@@ -14,29 +16,29 @@ struct HandTrackingControlPanel: View {
             // MARK: - Control panel card
             ZStack {
                 // Soft shadow behind panel
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color.black.opacity(0.15))
                     .blur(radius: 8)
                     .offset(x: 0, y: 4)
                 
-                // Main panel card (white/cream with subtle gradient)
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                // Main panel card (soft yellow/cream tone)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.95),
-                                Color(red: 0.98, green: 0.97, blue: 0.95)
+                                Color(red: 0.98, green: 0.96, blue: 0.88),
+                                Color(red: 0.96, green: 0.94, blue: 0.86)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .overlay {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        Color.white.opacity(0.8),
+                                        Color.black.opacity(0.12),
                                         Color.black.opacity(0.08)
                                     ],
                                     startPoint: .topLeading,
@@ -45,7 +47,6 @@ struct HandTrackingControlPanel: View {
                                 lineWidth: 1.5
                             )
                     }
-                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
                 
                 // Thumbtacks/pins at top corners
                 ThumbTackView()
@@ -57,7 +58,7 @@ struct HandTrackingControlPanel: View {
                 VStack(spacing: 10) {
                     // Label
                     Text("Hand Tracking")
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .font(.custom("Marker Felt", size: 15))
                         .foregroundStyle(Color.black.opacity(0.6))
                         .tracking(0.3)
                     
@@ -122,7 +123,7 @@ struct HandTrackingControlPanel: View {
                             .shadow(color: statusColor.opacity(0.6), radius: 3)
                         
                         Text(statusText)
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .font(.custom("Marker Felt", size: 11))
                             .foregroundStyle(Color.black.opacity(0.7))
                             .tracking(0.5)
                     }
