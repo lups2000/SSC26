@@ -157,7 +157,7 @@ private struct ThumbTackView: View {
                         endPoint: .bottom
                     )
                 )
-                .frame(width: 1.5, height: 8)
+                .frame(width: 2, height: 8)
                 .offset(y: 6)
                 .shadow(color: .black.opacity(0.25), radius: 1, x: 0.5, y: 0.5)
             
@@ -188,7 +188,6 @@ private struct ThumbTackView: View {
                 .fill(
                     RadialGradient(
                         colors: [
-                            Color(red: 0.92, green: 0.82, blue: 0.62), // Bright brass highlight
                             Color(red: 0.80, green: 0.68, blue: 0.48), // Mid brass tone
                             Color(red: 0.65, green: 0.55, blue: 0.40)  // Shadow edge
                         ],
@@ -198,22 +197,6 @@ private struct ThumbTackView: View {
                     )
                 )
                 .frame(width: 9, height: 9)
-            
-            // Specular highlight (bright spot for shine)
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.95, blue: 0.80).opacity(0.6),
-                            Color(red: 1.0, green: 0.95, blue: 0.80).opacity(0.0)
-                        ],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 2
-                    )
-                )
-                .frame(width: 3.5, height: 3.5)
-                .offset(x: -1.5, y: -1.5)
             
             // Subtle rim light (opposite side of highlight)
             Circle()
