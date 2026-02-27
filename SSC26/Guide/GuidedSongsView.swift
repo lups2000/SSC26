@@ -11,6 +11,16 @@ struct GuidedSong: Identifiable, Equatable {
 struct GuidedSongsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var columnVisibility: NavigationSplitViewVisibility
+    
+    // Optional initializer for when used without split view
+    init(columnVisibility: Binding<NavigationSplitViewVisibility>? = nil) {
+        if let binding = columnVisibility {
+            self._columnVisibility = binding
+        } else {
+            // Create a constant binding when none is provided
+            self._columnVisibility = .constant(.automatic)
+        }
+    }
 
     let guidedSongs: [GuidedSong] = [
         // --- LEVEL 1 ---
