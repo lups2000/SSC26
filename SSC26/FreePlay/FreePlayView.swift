@@ -37,8 +37,17 @@ struct FreePlayView: View {
                 
                 // MARK: - Hand tracking control panel (top-right corner)
                 VStack {
-                    HStack {
+                    HStack(spacing: 12) {
                         Spacer()
+                        
+                        // Sound toggle button
+                        SoundToggleButton(
+                            isEnabled: true, // Placeholder - will wire up logic later
+                            onToggle: {
+                                // TODO: Wire up sound toggle logic
+                                print("Sound toggle tapped")
+                            }
+                        )
                         
                         HandTrackingControlPanel(
                             isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
@@ -64,7 +73,7 @@ struct FreePlayView: View {
                         )
                     }
                     .padding(.trailing, 15)
-                    .padding(.top, 30)
+                    .padding(.top, 40)
                     
                     Spacer()
                 }
@@ -73,7 +82,7 @@ struct FreePlayView: View {
                     
         }
         .ignoresSafeArea()
-        .navigationTitle("")
+        .navigationTitle("Free Play")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {
             columnVisibility = .all

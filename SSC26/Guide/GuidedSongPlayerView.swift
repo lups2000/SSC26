@@ -60,35 +60,47 @@ struct GuidedSongPlayerView: View {
                             onClose: onBack
                         )
                         
-                        // Clock and hand tracking control panel stacked vertically
+                        // Clock and control panels
                         VStack(spacing: 16) {
                             // Decorative classroom clock
                             ClassroomClockView()
                                 .frame(width: 85, height: 85)
                             
-                            // Hand tracking control panel
-                            HandTrackingControlPanel(
-                                isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
-                                isTracking: handTrackingManager.isTracking,
-                                onToggle: {
-                                    // Toggle the setting immediately (feels responsive)
-                                    await handTrackingManager.settings.toggleHandTracking()
-                                    
-                                    if !handTrackingManager.settings.isHandTrackingEnabled {
-                                        // Turning OFF - immediate cleanup
-                                        shouldInitializeCamera = false
-                                        handTrackingManager.resetTracking()
-                                    } else {
-                                        // Turning ON - delayed camera init to prevent freeze
-                                        // Do this in a detached task to not block the button
-                                        Task.detached { @MainActor in
-                                            // Small delay to let UI update first
-                                            try? await Task.sleep(for: .milliseconds(100))
-                                            shouldInitializeCamera = true
+                            // Control buttons side by side
+                            HStack(spacing: 12) {
+                                // Sound toggle button
+                                SoundToggleButton(
+                                    isEnabled: true, // Placeholder - will wire up logic later
+                                    onToggle: {
+                                        // TODO: Wire up sound toggle logic
+                                        print("Sound toggle tapped")
+                                    }
+                                )
+                                
+                                // Hand tracking control panel
+                                HandTrackingControlPanel(
+                                    isEnabled: handTrackingManager.settings.isHandTrackingEnabled,
+                                    isTracking: handTrackingManager.isTracking,
+                                    onToggle: {
+                                        // Toggle the setting immediately (feels responsive)
+                                        await handTrackingManager.settings.toggleHandTracking()
+                                        
+                                        if !handTrackingManager.settings.isHandTrackingEnabled {
+                                            // Turning OFF - immediate cleanup
+                                            shouldInitializeCamera = false
+                                            handTrackingManager.resetTracking()
+                                        } else {
+                                            // Turning ON - delayed camera init to prevent freeze
+                                            // Do this in a detached task to not block the button
+                                            Task.detached { @MainActor in
+                                                // Small delay to let UI update first
+                                                try? await Task.sleep(for: .milliseconds(100))
+                                                shouldInitializeCamera = true
+                                            }
                                         }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     
                     }
