@@ -3,7 +3,6 @@ import SwiftUI
 struct TargetIndicatorView : View {
     let color: Color
     @Binding var shakeTrigger: CGFloat
-    let isCorrect: Bool
 
     var body: some View {
         RoundedRectangle(cornerRadius: 15, style: .continuous)
@@ -24,19 +23,5 @@ struct TargetIndicatorView : View {
             .shadow(color: color.opacity(0.3), radius: 6, x: 0, y: 0)
             .frame(width: 50, height: 85)
             .modifier(ShakeEffect(animatableData: shakeTrigger))
-            .onAppear {
-                if !isCorrect {
-                    withAnimation(.linear(duration: 0.4).repeatCount(1, autoreverses: false)) {
-                        shakeTrigger += 1
-                    }
-                }
-            }
-            .onChange(of: isCorrect) { _, isC in
-                if !isC {
-                    withAnimation(.linear(duration: 0.4).repeatCount(1, autoreverses: false)) {
-                        shakeTrigger += 1
-                    }
-                }
-            }
     }
 }

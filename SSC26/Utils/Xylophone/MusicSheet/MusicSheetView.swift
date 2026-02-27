@@ -270,7 +270,7 @@ struct MusicSheetView: View {
                                         EngravedNoteView(note: note, noteSize: noteSize)
 
                                         if note.isTarget {
-                                            TargetIndicatorView(color: note.color, shakeTrigger: $shakeTrigger, isCorrect: isCorrect)
+                                            TargetIndicatorView(color: note.color, shakeTrigger: $shakeTrigger)
                                         }
                                     }
                                     .offset(y: noteOffset(note.pitch))
@@ -305,6 +305,15 @@ struct MusicSheetView: View {
                 .offset(y: 145)
         }
         .frame(width: 650, height: 280)
+        .onChange(of: isCorrect) { oldValue, newValue in
+            // Only trigger shake animation when transitioning from true to false
+            // (i.e., when a wrong note is played)
+            if oldValue && !newValue {
+                withAnimation(.linear(duration: 0.4).repeatCount(1, autoreverses: false)) {
+                    shakeTrigger += 1
+                }
+            }
+        }
     }
 
     private func noteOffset(_ pitch: CGFloat) -> CGFloat {
