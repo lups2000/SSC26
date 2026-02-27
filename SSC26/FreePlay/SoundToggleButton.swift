@@ -14,7 +14,7 @@ struct SoundToggleButton: View {
             iconEnabled: "speaker.wave.3.fill",
             iconDisabled: "speaker.slash.fill",
             statusColor: isEnabled ? .blue : Color(red: 0.6, green: 0.6, blue: 0.65),
-            statusText: isEnabled ? "ON" : "MUTED",
+            statusText: isEnabled ? "UNMUTED" : "MUTED",
             onToggle: onToggle
         )
     }
