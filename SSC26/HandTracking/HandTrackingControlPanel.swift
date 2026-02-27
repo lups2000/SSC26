@@ -182,46 +182,46 @@ struct HandTrackingVisualsOnly: View {
                     if i == 0 && !isPinching { // Only show thumb when not pinching
                         let point = manager.overlayPoints[i]
                         ZStack {
-                            // Outer glow - subtle gray
+                            // Outer glow - darker brown like mallet stick
                             Circle()
                                 .fill(
                                     RadialGradient(
                                         colors: [
-                                            Color.gray.opacity(0.35),
-                                            Color.gray.opacity(0.2),
+                                            Color(red: 0.78, green: 0.58, blue: 0.38).opacity(0.5),
+                                            Color(red: 0.68, green: 0.50, blue: 0.32).opacity(0.3),
                                             Color.clear
                                         ],
                                         center: .center,
                                         startRadius: 0,
-                                        endRadius: 25
+                                        endRadius: 30
                                     )
                                 )
-                                .frame(width: 50, height: 50)
-                                .blur(radius: 5)
+                                .frame(width: 60, height: 60)
+                                .blur(radius: 6)
                             
-                            // Main ring (hollow center) - gray
+                            // Main ring (hollow center) - darker brown like mallet stick
                             Circle()
                                 .stroke(
                                     LinearGradient(
                                         colors: [
-                                            Color.gray.opacity(0.9),
-                                            Color.gray.opacity(0.7)
+                                            Color(red: 0.78, green: 0.58, blue: 0.38),
+                                            Color(red: 0.68, green: 0.50, blue: 0.32)
                                         ],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     ),
-                                    lineWidth: 3
+                                    lineWidth: 4
                                 )
-                                .frame(width: 20, height: 20)
+                                .frame(width: 28, height: 28)
                             
-                            // Inner dot - simple white
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 6, height: 6)
-                                .offset(y: -3)
+                            // "T" for Thumb
+                            Text("T")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(Color.white)
+                                .shadow(color: Color(red: 0.68, green: 0.50, blue: 0.32).opacity(0.8), radius: 2)
                         }
                         .position(x: point.x, y: point.y)
-                        .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
+                        .shadow(color: .black.opacity(0.4), radius: 6, x: 0, y: 2)
                     }
                 }
             }
