@@ -48,7 +48,7 @@ struct GuidedSongPlayerView: View {
                 // MARK: - Main Content
                 VStack(spacing: 8) {
                     // Chalkboard and control panel side by side
-                    HStack(alignment: .center, spacing: 20) {
+                    HStack(alignment: .center, spacing: 12) {
                         MusicSheetView(
                             notes: sheetNotes(),
                             title: engine.song.title,
@@ -61,7 +61,7 @@ struct GuidedSongPlayerView: View {
                         )
                         
                         // Clock and control panels stacked vertically
-                        VStack(spacing: 16) {
+                        VStack(spacing: 40) {
                             // Decorative classroom clock
                             ClassroomClockView()
                                 .frame(width: 85, height: 85)
