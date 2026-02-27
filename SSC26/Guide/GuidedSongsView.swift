@@ -41,13 +41,22 @@ struct GuidedSongsView: View {
         GuidedSong(
             title: "Twinkle Twinkle Little Star",
             description: "Time to shine! This lullaby helps you jump across the colors like a star.",
-            notes: ["C", "C", "G", "G", "A", "A", "G", "F", "F", "E", "E", "D", "D", "C"],
+            notes: [
+                "C", "C", "G", "G", "A", "A", "G",
+                "F", "F", "E", "E", "D", "D", "C",
+                "G", "G", "F", "F", "E", "E", "D"
+            ],
             difficulty: 2
         ),
         GuidedSong(
-            title: "Ode to Joy",
-            description: "A happy, famous tune! See if you can play it perfectly one note at a time.",
-            notes: ["E", "E", "F", "G", "G", "F", "E", "D", "C", "C", "D", "E", "E", "D", "D"],
+            title: "Happy Birthday to You",
+            description: "Celebrate with music! Perfect for parties and special moments.",
+            notes: [
+                "C", "C", "D", "C", "F", "E",
+                "C", "C", "D", "C", "G", "F",
+                "C", "C", "C_H", "A", "F", "E", "D",
+                "A", "A", "A", "F", "G", "F"
+            ],
             difficulty: 2
         ),
 
@@ -55,13 +64,28 @@ struct GuidedSongsView: View {
         GuidedSong(
             title: "Joy to the World",
             description: "Slide down the rainbow! Start from the top and play all the way to the bottom.",
-            notes: ["C_H", "B", "A", "G", "F", "E", "D", "C", "G", "A", "A", "B", "C_H"],
+            notes: [
+                "C_H", "B", "A", "G", "F", "E", "D", "C",
+                "G", "A", "A", "B", "C_H",
+                "C_H", "B", "A", "G", "F", "E", "D", "C",
+                "G", "A", "A", "B", "C_H",
+                "D_H", "C_H", "B", "A", "G"
+            ],
             difficulty: 3
         ),
         GuidedSong(
             title: "The Can-Can",
             description: "The speed challenge! Can you keep up with the fast and bouncy notes?",
-            notes: ["C", "C", "E", "D", "C", "G", "G", "A", "G", "C_H", "C_H", "B", "A", "G"],
+            notes: [
+                "C", "C", "E", "D", "C",
+                "G", "G", "A", "G",
+                "C_H", "C_H", "B", "A", "G",
+                "E", "E", "F", "G",
+                "E", "C", "D", "E",
+                "C", "C", "E", "D", "C",
+                "G", "G", "A", "G",
+                "C_H", "B", "A", "G", "C_H"
+            ],
             difficulty: 3
         )
     ]
