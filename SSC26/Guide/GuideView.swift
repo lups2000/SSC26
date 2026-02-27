@@ -45,7 +45,6 @@ struct GuideView: View {
             cameraPermissionNotice
             handTrackingToggleControl
             handTrackingVisualGuide
-            handTrackingSteps
         }
     }
     
@@ -252,6 +251,9 @@ struct GuideView: View {
                 .font(.headline)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // Quick Start Steps at the top
+            handTrackingStepsContent
             
             // Main visual demonstration area
             VStack(spacing: 20) {
@@ -484,13 +486,7 @@ struct GuideView: View {
         }
     }
     
-    private var handTrackingSteps: some View {
-        VStack(spacing: 16) {
-            Text("Quick Start Steps")
-                .font(.headline)
-                .fontWeight(.bold)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+    private var handTrackingStepsContent: some View {
             VStack(spacing: 12) {
                 compactStep(
                     number: 1,
@@ -508,12 +504,18 @@ struct GuideView: View {
                 
                 compactStep(
                     number: 3,
+                    icon: "hand.raised.fill",
+                    title: "Position Your Hand",
+                    description: "Place one hand 30-40cm (12-16 inches) from camera, showing only thumb and index finger"
+                )
+                
+                compactStep(
+                    number: 4,
                     icon: "hand.pinch.fill",
                     title: "Pinch to Play",
-                    description: "Position hand over bars, pinch to make music!"
+                    description: "Position hand over bars, pinch thumb and index together to make music!"
                 )
             }
-        }
     }
     
     private func compactStep(number: Int, icon: String, title: String, description: String) -> some View {
