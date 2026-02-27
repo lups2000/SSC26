@@ -54,8 +54,29 @@ struct ClassroomClockView: View {
                 )
                 .frame(width: 72, height: 72)
             
-            // Hour markers (12 small dots)
-            ForEach(0..<12) { hour in
+            // Clock numbers (12, 3, 6, 9)
+            Text("12")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(Color.black.opacity(0.7))
+                .offset(y: -28)
+            
+            Text("3")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(Color.black.opacity(0.7))
+                .offset(x: 28)
+            
+            Text("6")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(Color.black.opacity(0.7))
+                .offset(y: 28)
+            
+            Text("9")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(Color.black.opacity(0.7))
+                .offset(x: -28)
+            
+            // Hour markers (dots for other hours, excluding 12, 3, 6, 9)
+            ForEach([1, 2, 4, 5, 7, 8, 10, 11], id: \.self) { hour in
                 Circle()
                     .fill(Color.black.opacity(0.6))
                     .frame(width: 3, height: 3)
@@ -71,8 +92,8 @@ struct ClassroomClockView: View {
                 .rotationEffect(hourAngle)
             
             // Minute hand
-            RoundedRectangle(cornerRadius: 1.5)
-                .fill(Color.black.opacity(0.7))
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color.black.opacity(0.8))
                 .frame(width: 2, height: 24)
                 .offset(y: -12)
                 .rotationEffect(minuteAngle)
