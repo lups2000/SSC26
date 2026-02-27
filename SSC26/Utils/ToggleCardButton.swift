@@ -12,6 +12,8 @@ struct ToggleCardButton: View {
     let statusText: String
     let onToggle: () -> Void
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         VStack(spacing: 0) {
             // MARK: - Control button card
@@ -22,11 +24,14 @@ struct ToggleCardButton: View {
                     .blur(radius: 8)
                     .offset(x: 0, y: 4)
                 
-                // Main button card (soft yellow/cream tone)
+                // Main button card (adaptive color based on color scheme)
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(
                         LinearGradient(
-                            colors: [
+                            colors: colorScheme == .dark ? [
+                                Color(red: 0.20, green: 0.20, blue: 0.22),
+                                Color(red: 0.18, green: 0.18, blue: 0.20)
+                            ] : [
                                 Color(red: 0.98, green: 0.96, blue: 0.88),
                                 Color(red: 0.96, green: 0.94, blue: 0.86)
                             ],
@@ -38,7 +43,10 @@ struct ToggleCardButton: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(
                                 LinearGradient(
-                                    colors: [
+                                    colors: colorScheme == .dark ? [
+                                        Color.white.opacity(0.15),
+                                        Color.white.opacity(0.08)
+                                    ] : [
                                         Color.black.opacity(0.12),
                                         Color.black.opacity(0.08)
                                     ],
@@ -57,7 +65,7 @@ struct ToggleCardButton: View {
                     // Label
                     Text(label)
                         .font(.custom("Marker Felt", size: 13))
-                        .foregroundStyle(Color.black.opacity(0.6))
+                        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.75) : Color.black.opacity(0.6))
                         .tracking(0.3)
                     
                     // Button
@@ -118,7 +126,7 @@ struct ToggleCardButton: View {
                         
                         Text(statusText)
                             .font(.custom("Marker Felt", size: 10))
-                            .foregroundStyle(Color.black.opacity(0.7))
+                            .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.85) : Color.black.opacity(0.7))
                             .tracking(0.5)
                     }
                     .padding(.horizontal, 8)
@@ -143,13 +151,18 @@ struct ToggleCardButton: View {
 
 /// A decorative thumbtack/pin for the control panels
 private struct ThumbTackView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         ZStack {
             // Pin needle (the pointy part going into the board)
             Capsule()
                 .fill(
                     LinearGradient(
-                        colors: [
+                        colors: colorScheme == .dark ? [
+                            Color(red: 0.75, green: 0.75, blue: 0.75).opacity(0.6),
+                            Color(red: 0.60, green: 0.60, blue: 0.60).opacity(0.4)
+                        ] : [
                             Color(red: 0.65, green: 0.55, blue: 0.40).opacity(0.7),
                             Color(red: 0.50, green: 0.42, blue: 0.30).opacity(0.5)
                         ],
@@ -163,7 +176,7 @@ private struct ThumbTackView: View {
             
             // Pin head shadow (larger, softer)
             Circle()
-                .fill(Color.black.opacity(0.18))
+                .fill(Color.black.opacity(colorScheme == .dark ? 0.35 : 0.18))
                 .frame(width: 11, height: 11)
                 .blur(radius: 2.5)
                 .offset(x: 0.5, y: 1.5)
@@ -172,7 +185,10 @@ private struct ThumbTackView: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [
+                        colors: colorScheme == .dark ? [
+                            Color(red: 0.82, green: 0.82, blue: 0.82),
+                            Color(red: 0.68, green: 0.68, blue: 0.68)
+                        ] : [
                             Color(red: 0.72, green: 0.60, blue: 0.42),
                             Color(red: 0.60, green: 0.50, blue: 0.36)
                         ],
@@ -183,11 +199,14 @@ private struct ThumbTackView: View {
                 )
                 .frame(width: 12, height: 12)
             
-            // Pin head main body - warm brass/bronze tone
+            // Pin head main body - warm brass/bronze tone (light) or silver (dark)
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [
+                        colors: colorScheme == .dark ? [
+                            Color(red: 0.90, green: 0.90, blue: 0.90),
+                            Color(red: 0.75, green: 0.75, blue: 0.75)
+                        ] : [
                             Color(red: 0.80, green: 0.68, blue: 0.48), // Mid brass tone
                             Color(red: 0.65, green: 0.55, blue: 0.40)  // Shadow edge
                         ],
@@ -202,7 +221,10 @@ private struct ThumbTackView: View {
             Circle()
                 .stroke(
                     LinearGradient(
-                        colors: [
+                        colors: colorScheme == .dark ? [
+                            Color.white.opacity(0.4),
+                            Color.clear
+                        ] : [
                             Color(red: 0.95, green: 0.88, blue: 0.70).opacity(0.25),
                             Color.clear
                         ],
@@ -218,7 +240,7 @@ private struct ThumbTackView: View {
 
 // MARK: - Preview
 
-#Preview("Toggle Card Buttons") {
+#Preview("Toggle Card Buttons - Light Mode") {
     ZStack {
         Color.gray.opacity(0.2)
             .ignoresSafeArea()
@@ -249,4 +271,39 @@ private struct ThumbTackView: View {
             )
         }
     }
+    .preferredColorScheme(.light)
 }
+#Preview("Toggle Card Buttons - Dark Mode") {
+    ZStack {
+        Color.black
+            .ignoresSafeArea()
+        
+        HStack(spacing: 12) {
+            ToggleCardButton(
+                label: "Sound",
+                isEnabled: true,
+                iconEnabled: "speaker.wave.3.fill",
+                iconDisabled: "speaker.slash.fill",
+                statusColor: .blue,
+                statusText: "ON",
+                onToggle: {
+                    print("Sound toggled")
+                }
+            )
+            
+            ToggleCardButton(
+                label: "Hand Tracking",
+                isEnabled: false,
+                iconEnabled: "hand.raised.fill",
+                iconDisabled: "hand.raised.slash.fill",
+                statusColor: .green,
+                statusText: "OFF",
+                onToggle: {
+                    print("Hand tracking toggled")
+                }
+            )
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+

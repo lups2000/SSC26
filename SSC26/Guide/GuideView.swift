@@ -554,7 +554,9 @@ struct GuideView: View {
         .padding(14)
         .background {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.5) : Color.white.opacity(0.6))
+                .fill(colorScheme == .dark ?
+                      Color(white: 0.15).opacity(0.8) :
+                      Color.white.opacity(0.9))
         }
     }
     
@@ -722,7 +724,9 @@ struct GuideView: View {
             Spacer()
         }
         .padding(12)
-        .background(colorScheme == .dark ? Color(white: 0.12).opacity(0.5) : Color.white.opacity(0.6))
+        .background(colorScheme == .dark ?
+                    Color(white: 0.15).opacity(0.8) :
+                    Color.white.opacity(0.9))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
