@@ -40,3 +40,9 @@ Building XyloFingers allowed me to explore **spatial interaction, real-time syst
 ### 🔊 AVFoundation
 - Low-latency audio playback  
 - Preloaded buffers for instant feedback
+
+## Platform Requirements
+
+- **iPadOS 16.0+** - Required for Vision hand tracking features
+- **iPad with front-facing camera** - For hand tracking mode
+- **Recommended**: iPad Pro or iPad Air for optimal camera performance
