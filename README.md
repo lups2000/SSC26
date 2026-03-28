@@ -16,30 +16,20 @@ XyloFingers solves this by introducing:
 
 **Goal:** Make a digital instrument feel as natural and expressive as a real one.
 
+## 📸 Some Screenshots
+
+![Image 1](./Images/Screenshot1.png)
+![Image 2](./Images/Screenshot2.png)
+![Image 3](./Images/hand_pinch_open.png)
+![Image 4](./Images/hand_pinch.png)
+
+
 ## 🏁 Swift Student Challenge 2026
 
 This project was created for the **Swift Student Challenge 2026**.  
 While it was **not selected as a winning submission**, it represents a project I’m genuinely proud of—both technically and creatively.
 
 Building XyloFingers allowed me to explore **spatial interaction, real-time systems, and accessibility-driven design**, and it continues to serve as a foundation for future ideas.
-
-## 🛠️ Tech Stack
-
-### 🎨 SwiftUI + Observation
-- Declarative UI for smooth updates  
-- Fine-grained rendering with `@Observable`  
-
-### 👁️ Vision Framework
-- Real-time hand tracking (`VNDetectHumanHandPoseRequest`)  
-- On-device processing for privacy and performance  
-
-### ⚡ Swift Concurrency
-- `async/await` for non-blocking processing  
-- `@MainActor` for safe UI updates  
-
-### 🔊 AVFoundation
-- Low-latency audio playback  
-- Preloaded buffers for instant feedback
 
 ## Platform Requirements
 
